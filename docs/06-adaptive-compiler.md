@@ -29,9 +29,9 @@ The pipeline, in order:
 ## Native or bytecode
 
 Execution modules are **hybrid**: native object code and a project bytecode
-path, unified by a module ABI ([16-open-questions.md](16-open-questions.md), #5).
-The choice is **not** made from the code's origin. It is made from the analysis
-and the trust the compiler can establish:
+path, unified by a module ABI ([16-open-questions.md](16-open-questions.md),
+#20, #21). The choice is **not** made from the code's origin. It is made from the
+analysis and the trust the compiler can establish:
 
 - A Capability may be compiled **native** when static analysis, the verification
   level, and the execution permissions it needs all support it — **including a
@@ -45,7 +45,7 @@ The direction is to start safe and raise performance as trust is earned:
 initially a Capability may run as bytecode, and a later compiler pass MAY
 recompile a verified Capability to native. That recompilation is a **future
 extension**, not a Stage 0 feature
-([11-performance.md](11-performance.md), #8).
+([11-performance.md](11-performance.md), #68).
 
 ## The bytecode VM and the native backend
 
@@ -56,19 +56,32 @@ extension**, not a Stage 0 feature
 
 ## The module ABI
 
-The ABI is a **project ABI**, not C ABI as the internal standard (#22). It MUST
-support both native and bytecode modules calling each other, and it is fixed from
-the start ([16-open-questions.md](16-open-questions.md), #6). It MUST define, at
-minimum:
+The ABI is a **project ABI**, not C ABI as the internal standard (#22). It serves
+both native and bytecode modules.
 
-- memory ownership across a call boundary,
-- how data is passed (and what may be borrowed),
-- how errors are returned,
-- the rules for asynchronous execution.
+**Stage 0 defines a minimal ABI skeleton** ([RFC 0002](rfc/0002-stage0-execution-contract.md)):
 
-The concrete contract is still open, but it MUST be designed before either path
-is implemented, because retrofitting ownership or error rules across a module
-boundary is a breaking change. This is a Stage 0 deliverable (#20, #22).
+- value passing (the basic rule for input and output values),
+- error handling (a common success/failure result rule),
+- one asynchronous execution rule (await and receive a result),
+- an **explicit ABI version field**.
+
+Deferred to later RFCs, based on implementation evidence: complex ownership and
+lifetime rules, zero-copy transfer of large data, streaming-transfer details, GPU
+memory sharing, and advanced native/VM call optimisation.
+
+### ABI version compatibility
+
+A version field alone does not make modules compatible. The runtime MUST verify
+compatibility before running a module:
+
+1. read the module's ABI version;
+2. check it against the compatibility rules;
+3. run it if compatible;
+4. otherwise **reject explicitly**, or use a conversion layer.
+
+Stage 0 MUST validate only that one **bytecode** module is called through this ABI
+and returns a result. The native backend is not built at Stage 0.
 
 ## Incremental compilation
 
