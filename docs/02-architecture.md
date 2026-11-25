@@ -72,6 +72,10 @@ Concrete candidates and mechanics:
   directly.
 - Remote providers sit behind an **abstraction**; API keys live in the OS secret
   store (#43, later).
+- The model discovers Capabilities through **structured registry queries**
+  (tool/function calling), not memory or a prompt list; RAG is an optional
+  discovery aid, never an execution authority (#75). See
+  [09-security-model.md](09-security-model.md).
 
 ## L1/L2 · Isolation
 
@@ -214,3 +218,9 @@ The full schemas are owned by [03-workspace.md](03-workspace.md) and
 - **Architecture independence.** x86_64 is the first target (#58). AIR, the
   module ABI and the bytecode are designed to be architecture-independent, so
   aarch64 can be added later without redesigning them.
+- **Distribution.** `aos` is distributed through **crates.io and GitHub
+  Releases**; Capabilities are independent packages on GitHub Releases, held in a
+  **local** Capability Registry, described by a **language-independent Manifest**
+  (#76). A self-hosted package manager, a remote registry, signing and system
+  packages are later. Install integrity and execution permission are verified
+  separately ([09-security-model.md](09-security-model.md)).
