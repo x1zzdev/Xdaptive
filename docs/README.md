@@ -46,6 +46,17 @@ An **open question** is marked inline as `Open question:` and listed in
 a bug; it is a decision the project has deliberately deferred until it can be
 settled by a test.
 
+## Language and versioning
+
+The specification is **English**, with the original **Korean master vision** at
+[vision.ko.md](vision.ko.md) (#8). Other translations (Japanese, Chinese) are
+added once outside contributors appear.
+
+The specification has no version number of its own yet; the project starts at
+**0.1.0** and reaches **1.0.0** when the core architecture and public API
+stabilise (#10). Until then, a minor release MAY break compatibility, and the
+changelog records it.
+
 ## Changing the specification
 
 1. A change to an owning document is a normal pull request.
