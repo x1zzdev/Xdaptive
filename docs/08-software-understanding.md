@@ -50,6 +50,18 @@ A long-term research goal is to analyse an existing program's internal structure
 reinterpret it as Capabilities, and recompose it into a new execution
 environment. That is a hypothesis, not a guaranteed capability.
 
+The research decisions (#46–#49):
+
+- The repository name is fixed once the research purpose is clear; a temporary
+  name is enough for now (#46).
+- **Open-source software first** (#47): source and binary can be compared, so the
+  accuracy of an analysis can be verified. Proprietary targets come later.
+- **Ghidra is the first analysis tool** (#48); radare2 and angr are added as
+  needed.
+- A **legal and ethical guideline is documented** (#49), stating what analysis is
+  permitted — authorised analysis, interoperability research, vulnerability
+  research — and what is forbidden.
+
 ## The four layers
 
 ### 1 · Software Analyzer
