@@ -65,7 +65,7 @@ directions.
 
 The transaction's shape is settled (snapshot through rollback, atomic across the
 parts it touches); the concrete storage and transaction model is still open
-([16-open-questions.md](16-open-questions.md), #12).
+([16-open-questions.md](16-open-questions.md), #67).
 
 ## Guarantees
 

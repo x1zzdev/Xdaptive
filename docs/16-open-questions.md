@@ -51,8 +51,8 @@ hypothesis.
 | 17 | AIR documents carry an **explicit schema version** and a migration path. | [05-adaptive-ir.md](05-adaptive-ir.md) |
 | 19 | AIR **declares** permissions and resource needs; the runtime **grants and enforces** them. | [05-adaptive-ir.md](05-adaptive-ir.md), [09-security-model.md](09-security-model.md) |
 | 20 | A **minimal project bytecode VM**, starting with a verifier and a limited instruction set. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |
-| 22 | A **project Module ABI** that supports both native and bytecode, not C ABI as the internal standard. | [06-adaptive-compiler.md](06-adaptive-compiler.md), [07-execution-model.md](07-execution-model.md) |
-| 23 | Default isolation is the **process boundary**; untrusted model code runs in the **VM sandbox**. gVisor/Firecracker are not early requirements. | [07-execution-model.md](07-execution-model.md) |
+| 22 | A **minimal project Module ABI** (value passing, error handling, one async rule) with an explicit **version field** and a compatibility check before a module runs; advanced ownership, streaming and hardware conventions are deferred. Stage 0 validates one **bytecode** module call. | [06-adaptive-compiler.md](06-adaptive-compiler.md), [07-execution-model.md](07-execution-model.md), [RFC 0002](rfc/0002-stage0-execution-contract.md) |
+| 23 | Target isolation is the **process boundary**; untrusted model code runs in the **VM sandbox**. **Stage 0 is the exception: in-process, trusted code only, behind an execution interface.** gVisor/Firecracker are not early requirements. | [07-execution-model.md](07-execution-model.md), [RFC 0002](rfc/0002-stage0-execution-contract.md) |
 | 26 | Module cache is **local, content-addressed**; a remote registry is later. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |
 | 27 | **SQLite + content-addressed storage**, separating metadata from large content. | [03-workspace.md](03-workspace.md) |
 | 33 | Permissions are per-Capability and least-privilege, with **fine-grained file and network scopes**. | [09-security-model.md](09-security-model.md) |
@@ -61,13 +61,23 @@ hypothesis.
 | 38 | An **audit log** records who ran which Capability, when, and with which permissions, with traceability enough to reconstruct a run. | [09-security-model.md](09-security-model.md) |
 | 44 | Prompt and personal data are **not logged**; only minimal metadata (usage, time, selected model). | [09-security-model.md](09-security-model.md) |
 | 45 | The **AI-free path is preferred**; metrics measure it rather than forcing it. | [11-performance.md](11-performance.md), [14-evaluation.md](14-evaluation.md) |
+| 64 | **Capability is the minimum unit of composition**; Module is an implementation grouping, Component a deployment grouping. (Appendix B-1) | [04-capability-model.md](04-capability-model.md) |
+| 65 | **The Stage 0 AIR expresses only what the PoC needs**, and grows by RFC. (Appendix B-2) | [05-adaptive-ir.md](05-adaptive-ir.md) |
+| 66 | **State preservation is a three-step policy** — migrate, re-derive, or reject — and the old state is preserved until the new state is verified. (Appendix B-4) | [07-execution-model.md](07-execution-model.md) |
+| 67 | **Change is an atomic transition** (snapshot through rollback, atomic across the parts it touches). (Appendix B-9) | [10-adaptation-transactions.md](10-adaptation-transactions.md) |
+| 68 | The **compile and runtime structure** that keeps native performance while supporting dynamic composition, including recompiling verified bytecode to native. (Appendix B-10) | [11-performance.md](11-performance.md) |
+| 69 | The **form in which analysis output becomes a Software Manifest**. (Appendix B-7) | [08-software-understanding.md](08-software-understanding.md) |
+
+The Appendix B decisions were answered before the 63-question round and are
+renumbered here (#64–#69) so that every reference has one unique number. A bare
+`#N` always means a question from the 63-question round.
 
 ## Tier 2 · Validate by the PoC (Stages 0–2)
 
 | # | Direction | Owner |
 |---|---|---|
 | 11 | CI grows in stages: doc-link check, markdownlint, cargo test, clippy, cargo-deny first; then cargo audit and coverage. Coverage is not a goal by itself. | [.github/workflows/ci.yml](../.github/workflows/ci.yml) |
-| 18 | Compatibility considers type **plus** semantic contract, preconditions and postconditions. | [04-capability-model.md](04-capability-model.md) |
+| 18 | Compatibility considers type **plus** semantic contract, preconditions and postconditions. Stage 0 defines the **representation only**; enforcement is Stage 3 ([RFC 0002](rfc/0002-stage0-execution-contract.md)). | [04-capability-model.md](04-capability-model.md), [05-adaptive-ir.md](05-adaptive-ir.md) |
 | 21 | **LLVM** is the first native backend candidate; Cranelift is compared when fast JIT matters. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |
 | 24 | **async/await + channels**; a full actor model is not introduced up front. | [07-execution-model.md](07-execution-model.md) |
 | 25 | Incremental compilation is per Capability, **plus** dependents of a changed dependency. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |

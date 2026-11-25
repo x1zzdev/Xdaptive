@@ -43,7 +43,7 @@ The layer that understands intent and produces a plan.
 
 **A small local model is the default execution path; remote models are an
 optional, permissioned extension** ([16-open-questions.md](16-open-questions.md),
-#15 direction). The following rules are settled:
+#39, #45). The following rules are settled:
 
 - The OS MUST work offline: basic system function and core adaptation MUST NOT
   depend on a remote model.
@@ -135,7 +135,7 @@ The user deals with one Workspace, not a set of programs. See
 
 **The UI framework MUST NOT control the OS.** The desktop UI is Slint, but it
 sits behind a framework-independent **UI Composition Layer**
-([16-open-questions.md](16-open-questions.md), #14):
+([16-open-questions.md](16-open-questions.md), #50, #52):
 
 - AIR declares the UI panels and their relationship to Capabilities.
 - The UI Composition Layer decides which panels are shown, and when.

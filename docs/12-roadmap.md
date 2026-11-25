@@ -24,7 +24,7 @@ compatibility, and the changelog says so.
 The compiler, runtime and AIR are co-evolving, so the project stays a **monorepo**
 until their boundaries stabilise (#5). Software understanding is the one
 exception: it is a separate research project
-([08-software-understanding.md](08-software-understanding.md), #17).
+([08-software-understanding.md](08-software-understanding.md), #46).
 
 ## Stage 0 · System specification
 

@@ -54,8 +54,8 @@ These MUST hold. A change that breaks one is rejected, regardless of benefit.
 
 ## No origin-based trust
 
-Trust is never decided by where code came from ([16-open-questions.md](16-open-questions.md),
-#5, #10).
+Trust is never decided by where code came from
+([16-open-questions.md](16-open-questions.md), #20, #36).
 
 - A model-generated Capability is not automatically unsafe; it MAY be promoted to
   native execution once it has been analysed and proven safe.
@@ -63,7 +63,7 @@ Trust is never decided by where code came from ([16-open-questions.md](16-open-q
   access, syscalls and resource use, and the VM is part of the attack surface.
 
 Model output therefore passes a **separate validation layer** before it has any
-effect. The mechanism is still open (#10); the rule is not.
+effect ([16-open-questions.md](16-open-questions.md), #36).
 
 ## Data locality
 
