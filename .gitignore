@@ -1,0 +1,28 @@
+# Rust build artefacts
+/target/
+**/*.rs.bk
+*.pdb
+
+# Local-only working queue (see the NEW_PROJECT convention).
+# NEXT.md is the per-session task queue; it is never committed.
+NEXT.md
+NEXT-archive.md
+
+# Scratch output produced while running the CLI or experiments.
+/out/
+/scratch/
+*.log
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# Python (tooling and figures only)
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.egg-info/

@@ -1,0 +1,19 @@
+# Normalise line endings in the repository, independent of the platform.
+* text=auto eol=lf
+
+# Rust and documentation are always LF.
+*.rs   text eol=lf
+*.toml text eol=lf
+*.md   text eol=lf
+*.yml  text eol=lf
+
+# Binary assets are never converted.
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.ico  binary
+*.pdf  binary
+
+# Keep lockfiles out of the language statistics.
+Cargo.lock linguist-generated=true
