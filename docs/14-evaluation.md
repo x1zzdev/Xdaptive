@@ -51,6 +51,13 @@ Workspace-change stability:
 - whether a failed change loses data
 - recovery time
 
+A change is counted as successful only if it passes **both** verification layers
+of [RFC 0002](rfc/0002-stage0-execution-contract.md): numerical result
+equivalence within tolerance (`eps_abs = 1e-12`, `eps_rel = 1e-9` as PoC
+defaults) **and** state integrity. A single "close enough" number is not a
+measurement of state preservation. Per-operation tolerances, per-representation
+integrity rules, and error accumulation on large datasets are follow-ups.
+
 ## 5 · Runtime performance
 
 Ordinary work, compared against a baseline:

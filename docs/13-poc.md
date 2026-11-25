@@ -17,11 +17,11 @@ Every earlier decision is exercised at once:
 
 | Decision | What the PoC checks |
 |---|---|
-| Capability is the atom (#1) | data processing is built from independent Capabilities |
-| minimal AIR (#2) | function declaration and connection are expressed in AIR |
-| hybrid execution (#5) | execution modules are generated and connected |
-| three-step state policy (#7) | data-processing state survives a change |
-| atomic transition (#12) | a failed change restores the previous execution |
+| Capability is the atom (#64) | data processing is built from independent Capabilities |
+| minimal AIR (#65) | function declaration and connection are expressed in AIR |
+| hybrid execution (#20) | execution modules are generated and connected |
+| three-step state policy (#66) | data-processing state survives a change |
+| atomic transition (#67) | a failed change restores the previous execution |
 
 ## Initial Workspace
 
@@ -101,8 +101,7 @@ untrustworthy.
 The interface between the data engine and the OS MUST be designed so that an
 external engine (Polars, Arrow) can be connected as a Capability later. In Stage
 1 and beyond, the same interface is used to attach external engines, so the
-project gains its own technology **and** the ecosystem's performance
-([16-open-questions.md](16-open-questions.md), #9).
+project gains its own technology **and** the ecosystem's performance.
 
 ## What the PoC must not depend on
 
@@ -119,11 +118,50 @@ Workspace runtime alone. AI is connected afterwards, in Stage 4
   the existing panels survive and the result is consistent, or they do not.
 - It is small enough to build before the surrounding system exists.
 
+## How a change is verified
+
+A change is not verified by "the program still runs". It MUST pass **two
+independent layers**, both defined in
+[RFC 0002](rfc/0002-stage0-execution-contract.md) (#66):
+
+1. **Numerical result equivalence.** The result before and after must satisfy
+
+   ```text
+   |a - b| <= eps_abs + eps_rel * max(|a|, |b|)
+   ```
+
+   with `eps_abs = 1e-12` and `eps_rel = 1e-9` as PoC defaults. Absolute and
+   relative tolerances are both used, because a relative-only test breaks near
+   zero.
+2. **State integrity.** The migrated state must be validated against its
+   representation: bitwise equality where the representation allows it, and
+   structural or semantic validation otherwise (for example, floating-point
+   accumulation state).
+
+The two layers catch different faults: a tolerance-only check can pass when a
+datum was dropped but the final number happened to match; a bitwise-only check
+can fail on a correct recomputation. **Both MUST pass.**
+
+## Execution boundaries at Stage 0
+
+The PoC runs **in-process, and only trusted, self-written code**
+([RFC 0002](rfc/0002-stage0-execution-contract.md), #23). The runtime talks to an
+**execution interface**, so process isolation is added in Stage 1 without
+rewriting the runtime. Stage 0 MUST NOT claim that process isolation or a VM
+sandbox is provided, and untrusted or model-generated code MUST NOT run through
+the trusted in-process path.
+
+AIR and the manifest **express** preconditions and postconditions, but nothing
+evaluates them at Stage 0 (#18); enforcement is a Stage 3 concern. Basic input
+validation — rejecting a malformed CSV, refusing an unsupported statistic — is
+still mandatory, because that is what makes the PoC correct at all.
+
 ## Success criteria
 
 1. The initial Workspace is created from an AIR description with no AI.
 2. The extend change is applied as a transaction and the Workspace reaches v2.
-3. The swap keeps the result consistent before and after.
+3. The swap passes **both** verification layers: numerical equivalence within
+   tolerance and state integrity.
 4. The loaded data and the existing panels are preserved across both changes.
 5. A deliberately failing change rolls back and leaves the Workspace at its
    previous version.
