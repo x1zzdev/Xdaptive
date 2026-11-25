@@ -29,6 +29,57 @@ Compiler](06-adaptive-compiler.md).
 - permissions and execution conditions
 - resource requirements
 
+## Nature: a declarative DSL
+
+AIR is a **declarative DSL** ([16-open-questions.md](16-open-questions.md), #13).
+It expresses structure and relationships — components, connections, flow,
+interface, permissions — and it MUST NOT be a language for writing executable
+logic. Behaviour belongs to a Capability's implementation, not to AIR.
+
+## Types
+
+AIR has its **own type system** (#14), with numeric, string, table and tensor
+types provided as base types. Two rules govern compatibility:
+
+- **Nominal typing is the default** (#15). Compatibility is decided by name and
+  explicit declaration, not by shape alone. Two Capabilities may both accept a
+  number, but one may mean a temperature and the other a voltage; equal structure
+  is not equal meaning. Structural compatibility is an explicit opt-in.
+- **Compatibility is more than type** (#18). A connection is valid only if the
+  type, the semantic contract, the preconditions and the postconditions all
+  agree. A connection that passes on type alone is not proven safe.
+
+### Data passing
+
+A connection carries data in one of three modes (#16):
+
+- **value** — small data is passed by value;
+- **reference** — shared data is passed by reference;
+- **streaming** — large data is streamed.
+
+Copying GB-scale data is prohibited: the compiler MUST choose reference or
+streaming for large payloads.
+
+### Schema versioning
+
+An AIR document carries an **explicit schema version** (#17). The compiler MUST
+be able to read a previous version and migrate it forward; a document with an
+unknown version is rejected rather than guessed at.
+
+## Permissions and resources
+
+AIR **declares** the permissions and resource requirements a composition needs
+(#19). It does not grant them. The runtime grants and enforces them
+([09-security-model.md](09-security-model.md)), and a composition that uses a
+permission it did not declare MUST fail validation.
+
+## Interface declaration
+
+AIR declares **which panels exist and how they relate to Capabilities** (#52). It
+does not describe layout, animation or interaction logic; those belong to the UI
+Composition Layer ([02-architecture.md](02-architecture.md)). AIR stays small by
+not absorbing the presentation layer.
+
 ## Minimal form (Stage 0)
 
 **The Stage 0 AIR expresses only what the [PoC](13-poc.md) needs, and grows by

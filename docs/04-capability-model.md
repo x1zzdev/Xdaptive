@@ -41,19 +41,33 @@ settled ([16-open-questions.md](16-open-questions.md), #1).
 
 ### Type rules
 
-`Open question:` the common type and memory model that carries data between
-Capabilities ([16-open-questions.md](16-open-questions.md), item 4). The working
-direction:
+The type system is AIR's ([05-adaptive-ir.md](05-adaptive-ir.md)). The rules that
+govern a Capability's types are settled (#14, #15, #16, #18):
 
 - Every Capability input and output MUST have a declared type.
-- Two Capabilities MAY be connected only if the producer's output type is
-  assignable to the consumer's input type, under a relation defined once and
-  used everywhere.
-- The relation MUST be checkable statically, before execution, wherever
-  possible.
+- **Nominal typing is the default.** A connection is decided by name and explicit
+  declaration, not by shape. Two Capabilities may both accept a number while
+  meaning different things; equal structure is not equal meaning. Structural
+  compatibility is an explicit opt-in, not the default.
+- A connection is valid only when the **type, the semantic contract, the
+  preconditions and the postconditions** all agree. Type agreement alone is not
+  enough.
+- Data passes as **value, reference or streaming**; copying GB-scale data is
+  prohibited.
 - Where a Capability wraps external software whose types are not known
   statically, the type MUST be recorded in its manifest as an external type with
   a declared encoding.
+- The relation MUST be checkable statically, before execution, wherever
+  possible.
+
+## Permissions
+
+A Capability **declares** the permissions it needs; the runtime **grants and
+enforces** them ([09-security-model.md](09-security-model.md), #19, #33). The
+declaration is part of the manifest, and a Capability that uses a permission it
+did not declare MUST fail validation. Permissions are fine-grained — file read,
+write, create and delete, directory scope, and network destination and
+direction — not a single "file access" or "network access" flag.
 
 ## Software Manifest
 
