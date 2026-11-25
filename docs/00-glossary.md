@@ -18,7 +18,17 @@ once; other documents link to it instead of redefining it.
 
 - **Capability** — a single, executable unit of functionality with declared
   inputs, outputs, dependencies and permissions. Capability is the atom of
-  composition. See [04-capability-model.md](04-capability-model.md).
+  composition, and its identity is **implementation-language independent**. See
+  [04-capability-model.md](04-capability-model.md).
+- **Module** — an implementation of a Capability in some language. A Module
+  conforms to the [Module ABI](07-execution-model.md) and may be written in any
+  language; no language is mandatory.
+- **Component** — a deployment and isolation unit that carries one or more
+  Modules.
+- **Permission** — authorization to access a resource or perform a restricted
+  operation. A Capability **grants no Permission** by existing; permissions are
+  declared, granted and enforced by the runtime
+  ([09-security-model.md](09-security-model.md)).
 - **Software Manifest** — the description of what a piece of software provides
   to the OS: its Capabilities, interfaces, dependencies, permissions and the
   range of adaptation it supports.
@@ -79,6 +89,25 @@ once; other documents link to it instead of redefining it.
   MUST make the allocation decision.
 - **UI Synthesizer** — the component that builds and changes a Workspace's
   interface from its current Capabilities and task state.
+
+## Terminology and security
+
+Two words are easy to confuse and MUST NOT be used interchangeably.
+
+| Term | Meaning in Xdaptive |
+|---|---|
+| **Capability** | a logical unit of executable functionality (what something can do) |
+| **Permission** | authorization to access a resource or perform a restricted operation (what it is allowed to touch) |
+
+The operating-system security field uses "capability" for an authorization token
+(seL4, capability-based security). Xdaptive keeps **Capability** for the
+functional unit and reserves **Permission** for authorization, so a reader is
+never left guessing which one a sentence means. The rules:
+
+1. Capability and Permission MUST NOT be used as synonyms.
+2. Declaring a Capability MUST NOT grant any Permission.
+3. The runtime checks Permissions and controls actual access.
+4. Every Capability follows least privilege.
 
 ## The central invariant
 

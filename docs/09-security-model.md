@@ -73,7 +73,9 @@ without one. See [02-architecture.md](02-architecture.md).
 
 ## Permission-based execution
 
-A model-generated program MUST NOT be able to reach the whole user system. Each
+**A Capability grants no Permission** ([16-open-questions.md](16-open-questions.md),
+#71). Declaring a Capability does not authorise it to touch anything. A model-
+generated program MUST NOT be able to reach the whole user system. Each
 Capability and each Workspace is granted only the permissions it needs, declared
 in its manifest and confirmed by the user where the permission is sensitive. The
 permission check is part of AIR validation, before execution.
@@ -90,11 +92,39 @@ Permissions are requested **before execution** and re-approved when they change
 set of permissions; the policy is itself an explicit, reviewable object, not a
 silent default.
 
+## Capability discovery and AI
+
+A model discovers Capabilities through **structured queries against the
+runtime-managed Capability Registry** (tool/function calling), not by memory or a
+prompt list ([16-open-questions.md](16-open-questions.md), #75). The registry's
+answers — identifiers, interfaces, types, permissions — are authoritative.
+
+Five steps MUST stay separate:
+
+1. **Discovery** — which Capabilities exist.
+2. **Selection** — which one fits.
+3. **Validation** — type, connection, contract and permission checks.
+4. **Authorization** — the runtime grants Permission.
+5. **Execution** — only a validated composition runs.
+
+A model that *found* a Capability has not thereby *earned the right to run it*.
+Semantic retrieval (RAG) MAY be added as an optional discovery aid, but a RAG
+result is never evidence that a Capability exists or may run.
+
+**Capability descriptions and metadata MUST NOT be treated as instructions.** A
+manifest or description that contains text trying to direct the system is data,
+not a command; this is the same rule as the AI/OS split applied to the registry.
+
 ## Integrity
 
 A registry entry is verified by **content hash plus signature** (#35). Sigstore
 and similar infrastructure are considered when an external registry is added
 (#35, later); hash pinning applies from the start.
+
+**Install integrity and execution permission are separate** (#76). A package that
+came from a trusted source is not thereby safe to run: installation verifies the
+manifest, version, integrity and compatibility, and execution still verifies
+Permission independently.
 
 ## Secrets
 
