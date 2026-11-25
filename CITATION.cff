@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use Xdaptive in academic work, please cite it using the metadata below."
+title: "Xdaptive: an adaptive computing OS that generates, compiles and evolves software around intent"
+abstract: >-
+  Xdaptive is an operating system that treats the user's task, not the installed
+  program, as the unit of computing. It interprets intent, composes the software
+  a task needs into a single persistent Workspace, and adapts that Workspace in
+  place when the task changes. The project's own technology is an intermediate
+  representation (AIR) of software composition, a compiler that verifies and
+  lowers it, an execution model that mutates running structure without losing
+  state, and a Workspace runtime that owns lifecycle, versioning and recovery. A
+  model may propose a plan; the OS validates, sandboxes and commits it, and
+  rolls it back on failure.
+type: software
+authors:
+  - name: "Jangseowoo"
+    alias: "x1zz"
+    email: "ax1s@x1zz.com"
+repository-code: "https://github.com/x1zzdev/Xdaptive"
+url: "https://github.com/x1zzdev/Xdaptive"
+license: "Apache-2.0"
+keywords:
+  - operating system
+  - adaptive computing
+  - intent-centric computing
+  - intermediate representation
+  - software composition
+  - workspace runtime
+  - AI-native systems
