@@ -185,4 +185,5 @@ Xdaptive/
 ## 라이선스
 
 Apache License 2.0 — [LICENSE](LICENSE)와 [NOTICE](NOTICE) 참고. 이름과 슬로건은
-[상표 정책](TRADEMARK.md)의 적용을 받는다.
+[상표 정책](TRADEMARK.md)의 적용을 받는다. Xdaptive가 생성한 코드는 이 라이선스를
+자동으로 승계하지 않는다 — [생성 코드 정책](GENERATED-CODE-POLICY.md) 참고.
