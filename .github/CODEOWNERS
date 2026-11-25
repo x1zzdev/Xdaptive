@@ -1,0 +1,6 @@
+# Default owner for everything in the repository.
+# See GOVERNANCE.md for how decisions are made.
+* @ax1s-x1zz
+
+# The specification is the contract, so its review is not routine.
+/docs/ @ax1s-x1zz

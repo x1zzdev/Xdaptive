@@ -1,0 +1,25 @@
+name: Question
+description: Ask about the design, the architecture, or how to contribute.
+title: "question: "
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For open-ended discussion, [GitHub Discussions](https://github.com/x1zzdev/Xdaptive/discussions)
+        is usually a better fit. Use this template for a question that should
+        end in a concrete answer or a documentation change.
+  - type: textarea
+    id: question
+    attributes:
+      label: The question
+      description: What are you trying to understand or decide?
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: What you already read
+      description: Which documents or issues you looked at, so we do not repeat them.
+    validations:
+      required: false

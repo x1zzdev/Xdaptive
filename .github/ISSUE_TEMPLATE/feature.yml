@@ -1,0 +1,69 @@
+name: Feature request
+description: Propose a change to the specification, the architecture, or the tooling.
+title: "feat: "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Xdaptive is defined by its specification, so a feature request is a
+        proposal to change the specification. Read docs/01-vision.md and
+        docs/15-principles.md first: the ten principles decide what is accepted,
+        and a change that weakens the AI/OS split or makes the system harder to
+        measure is declined even when it is popular.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Specification (docs/)
+        - Adaptive IR (AIR)
+        - Adaptive Compiler
+        - Workspace runtime
+        - Composition engine / capability resolver
+        - Software understanding / reverse engineering
+        - Security / isolation
+        - Performance
+        - Desktop / UI
+        - CLI (aos)
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem
+      description: What can a user or a maintainer not do today?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed change
+      description: Be concrete. Show the AIR, the manifest field, the type, or the command you have in mind.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: principles
+    attributes:
+      label: How it survives the principles gate
+      description: Which of the ten principles does this serve, and which does it risk? How does it keep a model's output away from OS authority?
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: What else could solve the problem, including doing nothing?
+    validations:
+      required: false
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Confirmations
+      options:
+        - label: I searched the existing issues and the specification for a duplicate.
+          required: true
+        - label: If this needs a design record, I am willing to open an RFC in docs/rfc/.
+          required: false
