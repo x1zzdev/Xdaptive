@@ -37,3 +37,4 @@ The full process is [0001-rfc-process.md](0001-rfc-process.md). In short:
 | RFC | Title | Status |
 |---|---|---|
 | [0001](0001-rfc-process.md) | The RFC process | accepted |
+| [0002](0002-stage0-execution-contract.md) | The Stage 0 execution contract | accepted |
