@@ -67,6 +67,14 @@ hypothesis.
 | 67 | **Change is an atomic transition** (snapshot through rollback, atomic across the parts it touches). (Appendix B-9) | [10-adaptation-transactions.md](10-adaptation-transactions.md) |
 | 68 | The **compile and runtime structure** that keeps native performance while supporting dynamic composition, including recompiling verified bytecode to native. (Appendix B-10) | [11-performance.md](11-performance.md) |
 | 69 | The **form in which analysis output becomes a Software Manifest**. (Appendix B-7) | [08-software-understanding.md](08-software-understanding.md) |
+| 70 | **Capability identity is implementation-language independent**; Modules in any language conform to the Module ABI. Xz integrates through an independent adapter, never a mandatory dependency. | [04-capability-model.md](04-capability-model.md), [06-adaptive-compiler.md](06-adaptive-compiler.md) |
+| 71 | **Capability and Permission are distinct.** A Capability grants no Permission; permissions are declared, granted and enforced by the runtime. | [00-glossary.md](00-glossary.md), [09-security-model.md](09-security-model.md) |
+| 72 | **AIR has declarative connections and bounded conditional gates (`if`/`when`), no general iteration.** Conditions are typed and structural, not arbitrary code; repetition is delegated to a Capability or a streaming engine. | [05-adaptive-ir.md](05-adaptive-ir.md) |
+| 73 | **Dimensional and unit types are deferred to a future RFC.** Stage 0 uses primitive and structural types and keeps the type system extensible. | [05-adaptive-ir.md](05-adaptive-ir.md) |
+| 74 | **The runtime owns the Capability state lifecycle**; a Capability exposes a versioned `get_state`/`set_state`. External resources are managed handles with explicit recovery policies. | [03-workspace.md](03-workspace.md), [07-execution-model.md](07-execution-model.md) |
+| 75 | **The model discovers Capabilities through structured registry queries (tool calling).** RAG is an optional discovery aid, never an execution authority; discovery, selection, validation, authorization and execution are separate. | [02-architecture.md](02-architecture.md), [09-security-model.md](09-security-model.md) |
+| 76 | **Distribution is crates.io plus GitHub Releases**, with a local Capability Registry and a language-independent Manifest. Install integrity and execution permission are verified separately. | [02-architecture.md](02-architecture.md) |
+| 77 | **Generated Capability code is user-owned; the tool is Apache-2.0.** External code and model terms are respected separately. | [GENERATED-CODE-POLICY.md](../GENERATED-CODE-POLICY.md) |
 
 The Appendix B decisions were answered before the 63-question round and are
 renumbered here (#64–#69) so that every reference has one unique number. A bare
