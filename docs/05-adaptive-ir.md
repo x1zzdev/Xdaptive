@@ -80,10 +80,26 @@ does not describe layout, animation or interaction logic; those belong to the UI
 Composition Layer ([02-architecture.md](02-architecture.md)). AIR stays small by
 not absorbing the presentation layer.
 
+## Contracts
+
+AIR and the manifest **express** preconditions and postconditions; nothing
+evaluates them at Stage 0 ([RFC 0002](rfc/0002-stage0-execution-contract.md),
+#18). Stage 0 fixes only:
+
+- the distinction between a precondition and a postcondition;
+- that a contract belongs to a Capability;
+- that the representation is extensible;
+- the direction of contract identification and versioning.
+
+Contract evaluation and enforcement are deferred to Stage 3. Basic input
+validation and runtime error handling are separate and remain mandatory: refusing
+a malformed input is not contract enforcement, it is the minimum defence a
+function needs to be correct.
+
 ## Minimal form (Stage 0)
 
 **The Stage 0 AIR expresses only what the [PoC](13-poc.md) needs, and grows by
-RFC** ([16-open-questions.md](16-open-questions.md), #2). The project
+RFC** ([16-open-questions.md](16-open-questions.md), #65). The project
 deliberately avoids designing a large DSL up front.
 
 The initial constructs are:

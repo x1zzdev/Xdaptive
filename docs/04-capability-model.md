@@ -37,7 +37,7 @@ A Capability declares:
 grouping (how Capabilities are packaged in code), and a **Component** is a
 deployment grouping (how they are isolated and shipped). Both are sub-concepts;
 neither is the unit the resolver, AIR or the Workspace reason about. This is
-settled ([16-open-questions.md](16-open-questions.md), #1).
+settled ([16-open-questions.md](16-open-questions.md), #64).
 
 ### Type rules
 
@@ -59,6 +59,12 @@ govern a Capability's types are settled (#14, #15, #16, #18):
   a declared encoding.
 - The relation MUST be checkable statically, before execution, wherever
   possible.
+
+At Stage 0 the contract part of this rule is a **declaration only**: the
+structural representation of preconditions and postconditions is defined, but
+enforcement is deferred to Stage 3
+([RFC 0002](rfc/0002-stage0-execution-contract.md)). Type and connection
+checking still apply.
 
 ## Permissions
 
