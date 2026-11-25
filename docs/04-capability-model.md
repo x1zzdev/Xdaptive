@@ -33,11 +33,11 @@ A Capability declares:
 - its API or IPC interface
 - compatibility information
 
-`Open question:` whether Capability is the final minimum unit, or whether a
-smaller or larger concept (Module, Component) is the atom
-([16-open-questions.md](16-open-questions.md), item 1). The working choice is
-Capability, with **Module** as an implementation grouping and **Component** as a
-deployment grouping. This is not yet settled by a test.
+**Capability is the atom of composition.** A **Module** is an implementation
+grouping (how Capabilities are packaged in code), and a **Component** is a
+deployment grouping (how they are isolated and shipped). Both are sub-concepts;
+neither is the unit the resolver, AIR or the Workspace reason about. This is
+settled ([16-open-questions.md](16-open-questions.md), #1).
 
 ### Type rules
 

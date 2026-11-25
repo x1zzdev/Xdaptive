@@ -31,10 +31,9 @@ Compiler](06-adaptive-compiler.md).
 
 ## Minimal form (Stage 0)
 
-`Open question:` how far AIR must express structure and flow
-([16-open-questions.md](16-open-questions.md), item 2). The project deliberately
-avoids designing a large DSL up front. The first version supports only what the
-[PoC](13-poc.md) needs, and grows by RFC.
+**The Stage 0 AIR expresses only what the [PoC](13-poc.md) needs, and grows by
+RFC** ([16-open-questions.md](16-open-questions.md), #2). The project
+deliberately avoids designing a large DSL up front.
 
 The initial constructs are:
 
