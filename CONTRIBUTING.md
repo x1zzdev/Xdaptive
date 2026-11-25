@@ -103,6 +103,25 @@ got, and a note on whether the specification agrees with you.
 Participation is covered by [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Report
 unacceptable behavior to ax1s@x1zz.com.
 
+## Developer Certificate of Origin
+
+Contributions use the **Developer Certificate of Origin (DCO)**, not a CLA
+(#3). Sign off each commit:
+
+```sh
+git commit -s -m "spec(ir): ..."
+```
+
+The sign-off is a line in the commit message:
+
+```
+Signed-off-by: Your Name <you@example.com>
+```
+
+It certifies that you wrote the contribution, or have the right to submit it
+under the project's license. The full text is in [DCO](DCO). A CLA is
+introduced only if a legal or licensing need appears.
+
 ## License
 
 Xdaptive is licensed under Apache-2.0. By submitting a contribution you agree
