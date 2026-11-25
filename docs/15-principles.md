@@ -40,6 +40,26 @@ changed first.
     without naming how it is measured. See
     [14-evaluation.md](14-evaluation.md).
 
+## The five architectural principles
+
+The ten principles above are the project's values. These five are how the
+architecture enforces them, and every component MUST respect them.
+
+1. **Separate function from implementation.** A **Capability** carries a
+   function's identity; **Module** and **Component** carry its implementation and
+   deployment. Function and implementation MUST be able to change
+   independently.
+2. **Separate declaration from execution.** **AIR** expresses structure; the
+   **runtime** is responsible for execution. AIR MUST NOT carry executable logic.
+3. **Pursue performance and safety together.** Native and project bytecode are
+   used according to the situation, chosen by analysis and trust, not by origin
+   ([06-adaptive-compiler.md](06-adaptive-compiler.md)).
+4. **Integrity before change.** If state cannot be migrated safely, do not
+   change. A change that cannot preserve state is rejected, not attempted.
+5. **AI is both controlled and a tool.** AI does not hold OS authority; the OS
+   validates and applies what AI produces
+   ([09-security-model.md](09-security-model.md)).
+
 ## The safety-first corollary
 
 > Change only when the change can be made safely. Never trade data integrity for
