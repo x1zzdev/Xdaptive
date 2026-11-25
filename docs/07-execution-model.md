@@ -70,22 +70,50 @@ composed and changed at runtime. Core research targets:
 - incremental update
 - execution isolation
 
-`Open question:` the binary and ABI contract execution modules follow
-([16-open-questions.md](16-open-questions.md), item 6).
+The module ABI is fixed from the start; the concrete contract is an open
+question ([16-open-questions.md](16-open-questions.md), #6). See
+[06-adaptive-compiler.md](06-adaptive-compiler.md) for what the ABI MUST define.
 
 ## Preserving state across a change
 
 The hardest requirement: when a running program's structure changes, the existing
-task state MUST NOT be lost.
+task state MUST NOT be lost. State preservation is a **three-step policy**; the
+first step that applies is used ([16-open-questions.md](16-open-questions.md),
+#7).
 
-`Open question:` which state can migrate and which must be re-derived
-([16-open-questions.md](16-open-questions.md), item 7). The working direction:
+1. **State migration.** Move the existing state directly into the new
+   Capability.
+2. **State re-derivation.** Reconstruct the state from the original inputs or
+   from stored data.
+3. **Reject the change.** If neither method can preserve the state safely, the
+   change is refused before it is applied.
 
-- State a Capability declares as **migratable** is moved across the change.
-- State that cannot migrate MUST be re-derivable from recorded inputs, or the
-  change MUST be rejected before it is applied.
-- A change that cannot preserve required state MUST fail the
-  [transaction](10-adaptation-transactions.md), not proceed and lose data.
+The policy deliberately does not force one state model on every Capability: a
+file system and an AI inference engine hold state of a completely different
+nature, and each MUST be free to declare the method that fits it.
+
+### Atomic transition
+
+The policy depends on an **atomic transition**, the same idea as the transaction
+in [10-adaptation-transactions.md](10-adaptation-transactions.md):
+
+- The existing state is preserved until the new state is verified.
+- If migration fails, the system MUST return to the existing state; the old
+  Capability MUST NOT have been torn down first.
+- A data change made during migration MUST NOT be applied twice.
+
+Not every change can be seamless. Changes that touch an external system or an
+irreversible operation need a separate policy, and a change that cannot be made
+atomic MUST be rejected rather than attempted.
+
+### The governing rule
+
+> Change only when the change can be made safely. Never trade data integrity for
+> performance or adaptability.
+
+This is principle 6 ([15-principles.md](15-principles.md)) applied to state: the
+OS is not one that can always change, but one that changes only when it can do so
+safely.
 
 ## Isolation
 
