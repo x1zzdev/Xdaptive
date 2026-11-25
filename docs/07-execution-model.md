@@ -92,6 +92,11 @@ The policy deliberately does not force one state model on every Capability: a
 file system and an AI inference engine hold state of a completely different
 nature, and each MUST be free to declare the method that fits it.
 
+Re-derivation alone is not sufficient (#29). State such as a consumed one-shot
+external response or a live network session cannot be reconstructed by
+re-running. Such state requires a **selective per-engine checkpoint**; if neither
+a checkpoint nor re-derivation can preserve it, the change is rejected.
+
 ### Atomic transition
 
 The policy depends on an **atomic transition**, the same idea as the transaction
@@ -117,9 +122,20 @@ safely.
 
 ## Isolation
 
-Every execution module runs isolated. The starting mechanism is Linux
-`namespaces`, `seccomp` and `cgroups`. See
-[09-security-model.md](09-security-model.md).
+Every execution module runs isolated. The default isolation is the **process
+boundary**; untrusted, model-generated code runs in the **VM sandbox**
+([16-open-questions.md](16-open-questions.md), #23). The starting mechanism on
+Linux is `namespaces`, `seccomp` and `cgroups`. Stronger sandboxes (gVisor,
+Firecracker) are not early requirements; they are added if the process and VM
+boundaries prove insufficient. See [09-security-model.md](09-security-model.md).
+
+## Concurrency
+
+Concurrency is **async/await with channel-based communication**
+([16-open-questions.md](16-open-questions.md), #24). A full actor model is not
+introduced up front; channels carry data between Capabilities and modules, and
+the module ABI ([06-adaptive-compiler.md](06-adaptive-compiler.md)) defines the
+asynchronous rules across a module boundary.
 
 ## Related documents
 
