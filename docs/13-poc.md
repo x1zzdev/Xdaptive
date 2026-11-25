@@ -65,6 +65,22 @@ the state is lost, the hypothesis fails.
 > Can the system safely recompose an execution environment when the task changes,
 > while preserving existing software functionality and task state?
 
+## The minimal experiment
+
+The hypothesis is tested by one sequence (#1):
+
+1. Declare a Capability.
+2. Express its function and connections in AIR.
+3. Have the Adaptive Compiler generate an execution module.
+4. Run it in the runtime.
+5. Replace the Capability while it is running.
+6. Migrate or re-derive the state.
+7. Verify that the result before and after the change is consistent and safe.
+
+If this sequence succeeds, it is the foundation on which AI, software
+understanding, dynamic UI and GPU optimisation are later attached. Nothing else
+is built until it does.
+
 ## Scope of the self-built engine
 
 The PoC builds a minimal data engine directly, with no external dependencies. It
