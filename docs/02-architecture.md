@@ -60,6 +60,32 @@ optional, permissioned extension** ([16-open-questions.md](16-open-questions.md)
 **A model MUST NOT hold OS authority.** It proposes a plan and AIR; the OS
 validates and executes.
 
+Concrete candidates and mechanics:
+
+- The first local model candidate is a **small Qwen-family model**, with Llama
+  compared against it (#39). The system MUST NOT depend on one vendor's model.
+- The first local inference engine is **llama.cpp** (#40). ONNX Runtime is
+  connected for ONNX models and hardware acceleration.
+- Routing considers difficulty, memory, GPU, power and the privacy policy (#41).
+- Structured output is **JSON Schema first** (#42): the model's intermediate
+  result is validated, then converted to AIR. The model does not emit AIR
+  directly.
+- Remote providers sit behind an **abstraction**; API keys live in the OS secret
+  store (#43, later).
+
+## L1/L2 · Isolation
+
+Isolation is owned by [07-execution-model.md](07-execution-model.md): the process
+boundary is the default, and untrusted model code runs in the VM sandbox (#23).
+Stronger sandboxes are added only if needed.
+
+## L4 · Compiler and modules
+
+The compiler emits native or bytecode modules under a project ABI
+([06-adaptive-compiler.md](06-adaptive-compiler.md), #20, #22). The Workspace
+runtime's storage is SQLite plus content-addressed storage
+([03-workspace.md](03-workspace.md), #27).
+
 ## L4 · Adaptive Composition Engine
 
 The project's core technology.
@@ -118,6 +144,13 @@ sits behind a framework-independent **UI Composition Layer**
 Because the composition layer is separate, Slint can be replaced without changing
 the OS's core structure. egui MAY be used for developer and debug tooling (system
 monitoring, internal panels), but it is not the user-facing desktop.
+
+Accessibility is considered from the initial design, not added later (#51):
+keyboard navigation, a clear focus model, and screen-reader support are
+requirements. The UI MUST support multiple languages; the initial languages are
+English and Korean (#51). Keyboard and mouse come first, touch follows, and voice
+is an optional feature (#53). The Slint license is checked against the actual
+distribution model before it is assumed settled (#50).
 
 ## Internal data model
 
@@ -178,3 +211,6 @@ The full schemas are owned by [03-workspace.md](03-workspace.md) and
   by a model. See [11-performance.md](11-performance.md).
 - **Persistence.** Workspace state is versioned and recoverable. See
   [03-workspace.md](03-workspace.md).
+- **Architecture independence.** x86_64 is the first target (#58). AIR, the
+  module ABI and the bytecode are designed to be architecture-independent, so
+  aarch64 can be added later without redesigning them.
