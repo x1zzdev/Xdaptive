@@ -59,11 +59,15 @@ Ordinary work, compared against a baseline:
 - CPU use
 - memory use
 - GPU use
+- power use (#57)
 - process creation and teardown cost
 - IPC overhead
 
-The baseline MUST be named. "Faster than the previous commit" is not a
-measurement; "faster than the same task done by hand in the baseline tools" is.
+Performance is measured **per work type** (#56): a benchmark exists for each kind
+of task before a native-relative ratio is stated, and no single target ratio is
+fixed in advance. The baseline MUST be named. "Faster than the previous commit"
+is not a measurement; "faster than the same task done by hand in the baseline
+tools" is.
 
 ## 6 · AI efficiency
 
@@ -79,7 +83,16 @@ How efficiently AI is used in composition:
 
 The efficiency of the **AI-free** path MUST also be measured, because principle 4
 ([15-principles.md](15-principles.md)) requires that ordinary work does not pay
-for AI it does not use.
+for AI it does not use. The AI-free path is measured by (#45):
+
+- the proportion of tasks completed without an AI call;
+- the mean latency added per AI call;
+- the energy consumed by AI inference;
+- the proportion of AI-proposed changes that pass verification.
+
+Lowering the AI-call rate is **not** a goal in itself. A task that genuinely
+needs AI MUST use it; forcing it onto a non-AI path to improve the ratio is a
+regression, not an optimisation.
 
 ## How a claim enters the specification
 
