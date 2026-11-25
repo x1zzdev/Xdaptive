@@ -54,6 +54,15 @@ extension**, not a Stage 0 feature
 - The native backend's first candidate is **LLVM** (#21). Cranelift is compared
   when fast compilation and JIT matter more than peak code quality.
 
+## Implementation languages
+
+The compiler does not privilege one implementation language
+([16-open-questions.md](16-open-questions.md), #70). A Module may come from the
+project's bytecode, from Rust, from Xz through an adapter, or from another
+language, as long as it conforms to the Module ABI. Stage 0 builds and validates
+only the bytecode path; a language-specific toolchain is connected through an
+**independent adapter** and is never a mandatory dependency of the core.
+
 ## The module ABI
 
 The ABI is a **project ABI**, not C ABI as the internal standard (#22). It serves

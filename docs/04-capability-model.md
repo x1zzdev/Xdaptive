@@ -39,6 +39,17 @@ deployment grouping (how they are isolated and shipped). Both are sub-concepts;
 neither is the unit the resolver, AIR or the Workspace reason about. This is
 settled ([16-open-questions.md](16-open-questions.md), #64).
 
+### Implementation language
+
+A Capability's identity is **implementation-language independent**
+([16-open-questions.md](16-open-questions.md), #70). Its **Module** may be
+written in any language — Rust, the project's bytecode, Xz, or another — as long
+as it conforms to the [Module ABI](07-execution-model.md). No language is a
+mandatory dependency of the core architecture, and Stage 0 validates the design
+with its own bytecode path alone. A language-specific toolchain (for example Xz)
+integrates through an **independent adapter**; the `.xzint` interface format may
+be reused through that adapter, not adopted directly as the manifest.
+
 ### Type rules
 
 The type system is AIR's ([05-adaptive-ir.md](05-adaptive-ir.md)). The rules that
@@ -121,6 +132,29 @@ The resolver turns a task's requirements into a set of connected Capabilities:
 The resolver MUST fail closed: if a required Capability cannot be found, or two
 cannot be proven compatible, the resolution fails with a diagnostic rather than
 proceeding on an assumption.
+
+## State
+
+The **runtime owns the Capability state lifecycle**
+([16-open-questions.md](16-open-questions.md), #74). A Capability does not own its
+authoritative state; it exposes a versioned interface:
+
+- `get_state` — export the current state,
+- `set_state` — restore state.
+
+The runtime decides when to save, where to keep, and when to restore, and it does
+**not** need to understand the internal meaning of the state. This is what makes
+task continuity a runtime responsibility rather than something each Capability
+must provide on its own.
+
+A state snapshot carries at least: the Capability identifier, a **state schema
+version**, the state data, and integrity information. When a new Capability
+cannot restore an older state version, it MUST convert or re-derive it
+([07-execution-model.md](07-execution-model.md)).
+
+State that cannot be copied into the runtime — GPU memory, a database connection,
+a network socket — is held as a **managed external handle** with an explicit
+recovery policy; an invalid handle requires reconnection or re-creation.
 
 ## How a Capability is produced
 
