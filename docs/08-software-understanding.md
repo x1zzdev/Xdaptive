@@ -27,6 +27,29 @@ conflated:
 Being able to analyse something does not grant a right to copy or redistribute
 its code.
 
+## A separate research project
+
+Software understanding is **not** built in the main repository during Stages 0–2
+([16-open-questions.md](16-open-questions.md), #17). It is an independent
+research project, because mixing binary analysis into the main line makes the
+core hypothesis hard to test: when a program is not recomposed correctly, the
+cause could be the AIR representation, the resolver, the compiler, or an
+inference error in the analysis, and telling them apart becomes guesswork.
+
+The split:
+
+- **Main OS repository** — AIR, runtime, resolver, adaptive compiler, capability
+  management. Stages 0–2 focus here.
+- **Research repository** — binary analysis, dependency extraction, capability
+  inference, program-structure recovery.
+- **Integration point** — after Stages 1–2, the analysis project emits a list of
+  **Capability candidates**, and the main OS resolver verifies them. An analysis
+  result MUST NOT be treated as a trusted declaration on its own.
+
+A long-term research goal is to analyse an existing program's internal structure,
+reinterpret it as Capabilities, and recompose it into a new execution
+environment. That is a hypothesis, not a guaranteed capability.
+
 ## The four layers
 
 ### 1 · Software Analyzer
@@ -70,7 +93,7 @@ Combines verified functions into a Workspace. See
 ## From analysis to a manifest
 
 `Open question:` the form in which analysis output becomes a Software Manifest
-([16-open-questions.md](16-open-questions.md), item 9). The working direction:
+([16-open-questions.md](16-open-questions.md), #9). The working direction:
 Semantic Reconstruction produces the manifest's Capability list, and each
 Capability's declared type and permissions are inferred where possible and marked
 as inferred where not. An inferred manifest MUST be distinguishable from a
