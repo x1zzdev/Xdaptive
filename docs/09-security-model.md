@@ -78,6 +78,43 @@ Capability and each Workspace is granted only the permissions it needs, declared
 in its manifest and confirmed by the user where the permission is sensitive. The
 permission check is part of AIR validation, before execution.
 
+Permissions are **fine-grained** (#33) and least-privilege:
+
+- file read, write, create and delete, and directory scope — not a single "file
+  access" flag;
+- network destination and direction — not a single "network access" flag;
+- process and GPU access, each declared separately.
+
+Permissions are requested **before execution** and re-approved when they change
+(#34). To reduce approval fatigue, a **per-Workspace policy** MAY pre-authorise a
+set of permissions; the policy is itself an explicit, reviewable object, not a
+silent default.
+
+## Integrity
+
+A registry entry is verified by **content hash plus signature** (#35). Sigstore
+and similar infrastructure are considered when an external registry is added
+(#35, later); hash pinning applies from the start.
+
+## Secrets
+
+Secrets are **not stored inside a Capability** (#37). The runtime holds them in
+its secret store and passes the Capability only a reference and an access grant.
+A Capability MUST NOT be able to read a secret it was not granted.
+
+## Audit
+
+An **audit log** is a core requirement (#38). It records who ran which
+Capability, when, and with which permissions, and it is detailed enough to
+**reconstruct a run** after a problem — not merely a list of events. Traceability
+is the goal, not log volume.
+
+## Privacy
+
+Prompt content and personal data MUST NOT be logged (#44). Only minimal metadata
+— usage, execution time, the selected model — is recorded. This complements the
+data-locality rule above.
+
 ## Isolation
 
 Execution modules MUST run in isolated environments. The starting mechanism is
@@ -100,6 +137,11 @@ Every change passes, in order:
 This is the same list as the AIR validation steps plus the test-and-apply stage;
 [10-adaptation-transactions.md](10-adaptation-transactions.md) defines the
 transaction that carries it out.
+
+Verification of generated or reconstructed code is **static analysis plus tests
+plus sandbox execution** (#36). Formal verification is introduced in stages, and
+only for core security modules where its cost is justified — not for every
+Capability.
 
 ## State recovery
 
