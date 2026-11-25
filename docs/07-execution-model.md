@@ -97,6 +97,13 @@ external response or a live network session cannot be reconstructed by
 re-running. Such state requires a **selective per-engine checkpoint**; if neither
 a checkpoint nor re-derivation can preserve it, the change is rejected.
 
+The **runtime owns the state lifecycle** ([16-open-questions.md](16-open-questions.md),
+#74). A Capability exposes a versioned `get_state`/`set_state`; the runtime
+decides when to save, where to keep, and when to restore, and does not need to
+understand the state's internal meaning. External resources — GPU memory, a
+database connection, a network socket — are held as **managed handles** with an
+explicit recovery policy. See [04-capability-model.md](04-capability-model.md).
+
 ### Atomic transition
 
 The policy depends on an **atomic transition**, the same idea as the transaction
