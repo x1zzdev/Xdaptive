@@ -85,29 +85,34 @@ for how a change is applied across them.
 
 ## Persistence strategy
 
-Copying all data on every change is not acceptable. The project combines:
+Copying all data on every change is not acceptable. The storage is **SQLite plus
+content-addressed storage** (#27), separating metadata from large content:
 
-- immutable objects
-- content-addressed storage
-- change logs
-- incremental snapshots
-- checkpoints
-
-`Open question:` the concrete storage and recovery structure
-([16-open-questions.md](16-open-questions.md), item 11). The following is the
-working direction, not a settled decision:
-
+- **A metadata store (SQLite)** indexes IDs, versions and references.
 - **Immutable, content-addressed blobs** hold data state and any artifact that
   does not change once written.
 - **A change log** records the sequence of composition changes, so a Workspace
   version can be reconstructed.
-- **Checkpoints** record execution state per engine where the engine can provide
-  it, and a re-run specification where it cannot.
-- **A metadata store** (a relational store such as SQLite is the starting
-  candidate) indexes IDs, versions and references.
+- **Snapshots are copy-on-write and incremental** (#28); compression is applied
+  by a measured trade-off, not by default.
+- **Checkpoints are selective and per-engine** (#29). Where an engine can provide
+  one, it is recorded; where it cannot, a re-run specification is recorded; where
+  neither preserves required state, the change is rejected
+  ([07-execution-model.md](07-execution-model.md)).
 
 The storage layout MUST make the guarantee in principle 7 testable: after a
 change, the Workspace's task state is preserved and recoverable.
+
+## Cloning and concurrency
+
+- **Clone** shares immutable data by default and copies on write (COW) (#30). A
+  real copy happens only when required.
+- A Workspace MUST NOT share mutable state with another unless a Capability
+  declares it.
+- **Multiple concurrent Workspaces** are a long-term goal, with policy-based
+  resource priority (#31). Early on, the system is **single-user and local**
+  (#32); multi-user and remote Workspaces arrive after the security model
+  stabilises.
 
 ## Guarantees
 
