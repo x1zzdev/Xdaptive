@@ -70,8 +70,8 @@ composed and changed at runtime. Core research targets:
 - incremental update
 - execution isolation
 
-The module ABI is fixed from the start; the concrete contract is an open
-question ([16-open-questions.md](16-open-questions.md), #6). See
+The module ABI is fixed from the start; Stage 0 defines a minimal skeleton with a
+version field ([16-open-questions.md](16-open-questions.md), #22). See
 [06-adaptive-compiler.md](06-adaptive-compiler.md) for what the ABI MUST define.
 
 ## Preserving state across a change
@@ -79,7 +79,7 @@ question ([16-open-questions.md](16-open-questions.md), #6). See
 The hardest requirement: when a running program's structure changes, the existing
 task state MUST NOT be lost. State preservation is a **three-step policy**; the
 first step that applies is used ([16-open-questions.md](16-open-questions.md),
-#7).
+#66).
 
 1. **State migration.** Move the existing state directly into the new
    Capability.
@@ -122,12 +122,24 @@ safely.
 
 ## Isolation
 
-Every execution module runs isolated. The default isolation is the **process
-boundary**; untrusted, model-generated code runs in the **VM sandbox**
+Every execution module runs isolated. The target isolation is the **process
+boundary**, with untrusted, model-generated code in the **VM sandbox**
 ([16-open-questions.md](16-open-questions.md), #23). The starting mechanism on
 Linux is `namespaces`, `seccomp` and `cgroups`. Stronger sandboxes (gVisor,
 Firecracker) are not early requirements; they are added if the process and VM
 boundaries prove insufficient. See [09-security-model.md](09-security-model.md).
+
+**Stage 0 is an exception, by design.** It runs **in-process, and only trusted,
+self-written code** ([RFC 0002](rfc/0002-stage0-execution-contract.md)). The
+runtime MUST talk to an **execution interface** so that isolation can be
+introduced later without redesigning the runtime:
+
+- Stage 0 — in-process executor (trusted code only)
+- Stage 1 — process executor
+- later — hardened VM sandbox
+
+Untrusted or model-generated code MUST NOT run through the trusted in-process
+path, and Stage 0 MUST NOT claim that process isolation or a VM sandbox exists.
 
 ## Concurrency
 
