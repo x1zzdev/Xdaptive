@@ -42,12 +42,18 @@ attempted.
 ## State migration
 
 A change may need existing state to cross from the old composition to the new one
-([07-execution-model.md](07-execution-model.md)). The transaction MUST:
+([07-execution-model.md](07-execution-model.md)). The transaction follows the
+three-step policy there — migrate, re-derive, or reject — and MUST additionally:
 
-- move state a Capability declares as migratable;
 - verify, after staging, that migrated state matches the pre-change state where
   the two are comparable;
-- reject the change if required state cannot be preserved.
+- keep the old Capability alive until the new state is verified, so a failure
+  returns to the existing state rather than an already-torn-down one;
+- ensure a data change made during migration is not applied twice.
+
+This is the **atomic transition**. Not every change can be atomic — a change that
+touches an external system or an irreversible operation is out of scope for this
+transaction and MUST be rejected if it cannot be made atomic.
 
 ## Storage
 
@@ -57,8 +63,9 @@ a change log for composition history, and checkpoints for execution state. The
 snapshot in step 1 and the restore in step 7 are the same mechanism seen from two
 directions.
 
-`Open question:` the concrete storage and transaction model
-([16-open-questions.md](16-open-questions.md), item 12).
+The transaction's shape is settled (snapshot through rollback, atomic across the
+parts it touches); the concrete storage and transaction model is still open
+([16-open-questions.md](16-open-questions.md), #12).
 
 ## Guarantees
 

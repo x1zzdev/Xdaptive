@@ -40,6 +40,17 @@ changed first.
     without naming how it is measured. See
     [14-evaluation.md](14-evaluation.md).
 
+## The safety-first corollary
+
+> Change only when the change can be made safely. Never trade data integrity for
+> performance or adaptability.
+
+This is principles 6 and 7 stated as one rule. The OS is not one that can always
+change; it is one that changes only when it can do so safely. A change that would
+lose task state, or that cannot be made atomic, is rejected rather than
+attempted. See [07-execution-model.md](07-execution-model.md) and
+[10-adaptation-transactions.md](10-adaptation-transactions.md).
+
 ## How the principles interact
 
 Two of them are load-bearing and can conflict with the others:
