@@ -36,6 +36,24 @@ It expresses structure and relationships — components, connections, flow,
 interface, permissions — and it MUST NOT be a language for writing executable
 logic. Behaviour belongs to a Capability's implementation, not to AIR.
 
+## Control flow
+
+AIR has **declarative connections and bounded conditional gates**, and **no
+general iteration** ([16-open-questions.md](16-open-questions.md), #72):
+
+- A **connection** says which Capability's output feeds another's input.
+- A **conditional gate** (`if` / `when`) says under which condition a Capability
+  runs.
+- **Iteration is not expressed in AIR.** Repetition is the job of a Capability
+  implementation or a streaming engine, which delivers events that the
+  connections and gates react to.
+
+A gate's condition MUST be **typed and structural**, not an arbitrary expression
+that runs code. A complex decision is a Capability, not a condition. This keeps
+AIR from growing into a general-purpose programming language and keeps the number
+of variables the core hypothesis must test small. Complex branching and workflow
+orchestration are deferred to a future RFC.
+
 ## Types
 
 AIR has its **own type system** (#14), with numeric, string, table and tensor
@@ -65,6 +83,16 @@ streaming for large payloads.
 An AIR document carries an **explicit schema version** (#17). The compiler MUST
 be able to read a previous version and migrate it forward; a document with an
 unknown version is rejected rather than guessed at.
+
+### Dimensional and unit types
+
+Dimensional and unit types are **deferred to a future RFC**
+([16-open-questions.md](16-open-questions.md), #73). Stage 0 uses primitive and
+structural types only: integer, float, boolean, string, table and tensor. The
+type system MUST remain extensible enough to add dimensions, unit conversion,
+dimensional arithmetic and compile-time dimensional checking later. Unit
+correctness is not abandoned; it is studied separately, so it does not complicate
+the PoC.
 
 ## Permissions and resources
 
