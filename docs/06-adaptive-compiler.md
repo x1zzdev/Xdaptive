@@ -47,11 +47,19 @@ recompile a verified Capability to native. That recompilation is a **future
 extension**, not a Stage 0 feature
 ([11-performance.md](11-performance.md), #8).
 
+## The bytecode VM and the native backend
+
+- The bytecode path is a **minimal project VM** (#20). It starts with a verifier
+  and a limited instruction set; a complex VM is not built up front.
+- The native backend's first candidate is **LLVM** (#21). Cranelift is compared
+  when fast compilation and JIT matter more than peak code quality.
+
 ## The module ABI
 
-Native and bytecode modules call each other, so the ABI is fixed from the start
-([16-open-questions.md](16-open-questions.md), #6, direction settled). It MUST
-define, at minimum:
+The ABI is a **project ABI**, not C ABI as the internal standard (#22). It MUST
+support both native and bytecode modules calling each other, and it is fixed from
+the start ([16-open-questions.md](16-open-questions.md), #6). It MUST define, at
+minimum:
 
 - memory ownership across a call boundary,
 - how data is passed (and what may be borrowed),
@@ -60,15 +68,17 @@ define, at minimum:
 
 The concrete contract is still open, but it MUST be designed before either path
 is implemented, because retrofitting ownership or error rules across a module
-boundary is a breaking change.
+boundary is a breaking change. This is a Stage 0 deliverable (#20, #22).
 
 ## Incremental compilation
 
 Recompiling the whole Workspace on every change violates principle 5
 ([15-principles.md](15-principles.md)). The compiler MUST:
 
-- recompile only the Capabilities a change affects;
-- cache dependency analysis keyed by the inputs that produced it;
+- recompile only the Capabilities a change affects, **and the Capabilities that
+  depend on a changed dependency** (#25);
+- cache dependency analysis keyed by the inputs that produced it, in a **local,
+  content-addressed module cache** (#26); a remote registry is a later addition;
 - reuse unchanged execution modules;
 - keep the incremental result identical to a full compile (checked by a test).
 
