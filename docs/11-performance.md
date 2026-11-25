@@ -63,11 +63,23 @@ task's characteristics or expected demand; the allocation decision belongs to
 the verified resource manager. This is an instance of the AI/OS split
 ([09-security-model.md](09-security-model.md)).
 
-The project starts on Linux's existing resource facilities (`cgroups`, scheduler
-policy) and researches its own policy and scheduling logic above them.
+The project builds a **policy layer over the existing OS's resource management**
+(#54); it does not write a kernel scheduler. Adaptive scheduling policy is
+researched above Linux's facilities (`cgroups`, scheduler policy), and a
+self-hosted scheduler is considered only if the existing kernel cannot meet a
+requirement that Stages 0–4 have actually demonstrated.
 
-`Open question:` the scope of the project's own scheduler
-([16-open-questions.md](16-open-questions.md), item 16).
+## GPU
+
+GPU access is a **backend abstraction** (#55). Vulkan is the general candidate;
+CUDA and ROCm are optional backends behind the same interface. No single vendor
+API is the internal standard.
+
+## Power
+
+Power management is a design goal (#57), but the first step is **measurement and
+observability**: resource and energy use are recorded before any policy tries to
+optimise them.
 
 ## Performance is measured, not asserted
 
