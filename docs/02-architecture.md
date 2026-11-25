@@ -41,10 +41,24 @@ The layer that understands intent and produces a plan.
 - Output Validator
 - Local Model Runtime
 
-A small local model SHOULD be the default; larger local or remote models MAY be
-used for harder tasks. **A model MUST NOT hold OS authority.** It proposes a
-plan and AIR; the OS validates and executes. See
-[09-security-model.md](09-security-model.md).
+**A small local model is the default execution path; remote models are an
+optional, permissioned extension** ([16-open-questions.md](16-open-questions.md),
+#15 direction). The following rules are settled:
+
+- The OS MUST work offline: basic system function and core adaptation MUST NOT
+  depend on a remote model.
+- Personal or sensitive system data MUST NOT be sent externally by default.
+- Using a remote model is decided by permission and policy.
+- The system MUST NOT stop if a remote model is unavailable; it degrades to the
+  local path.
+- Model-generated output MUST pass the validation layer before it has any effect
+  ([09-security-model.md](09-security-model.md)).
+- Model selection MUST consider memory, GPU and power use, not only task
+  difficulty. A task that is easy but has no resources for the local model takes
+  another path.
+
+**A model MUST NOT hold OS authority.** It proposes a plan and AIR; the OS
+validates and executes.
 
 ## L4 · Adaptive Composition Engine
 
@@ -84,13 +98,26 @@ Where the user interacts.
 
 - Adaptive Desktop
 - Workspace Shell
-- Dynamic UI
+- **UI Composition Layer**
+- Slint Renderer
 - Interaction Manager
 - Notification System
 - Task Interface
 
 The user deals with one Workspace, not a set of programs. See
 [03-workspace.md](03-workspace.md) for the Workspace model.
+
+**The UI framework MUST NOT control the OS.** The desktop UI is Slint, but it
+sits behind a framework-independent **UI Composition Layer**
+([16-open-questions.md](16-open-questions.md), #14):
+
+- AIR declares the UI panels and their relationship to Capabilities.
+- The UI Composition Layer decides which panels are shown, and when.
+- The Slint renderer draws them.
+
+Because the composition layer is separate, Slint can be replaced without changing
+the OS's core structure. egui MAY be used for developer and debug tooling (system
+monitoring, internal panels), but it is not the user-facing desktop.
 
 ## Internal data model
 

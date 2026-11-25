@@ -52,6 +52,25 @@ These MUST hold. A change that breaks one is rejected, regardless of benefit.
 5. A change that fails validation MUST NOT commit; the Workspace MUST remain at
    its previous consistent version.
 
+## No origin-based trust
+
+Trust is never decided by where code came from ([16-open-questions.md](16-open-questions.md),
+#5, #10).
+
+- A model-generated Capability is not automatically unsafe; it MAY be promoted to
+  native execution once it has been analysed and proven safe.
+- Bytecode is not automatically safe. The runtime MUST still verify memory
+  access, syscalls and resource use, and the VM is part of the attack surface.
+
+Model output therefore passes a **separate validation layer** before it has any
+effect. The mechanism is still open (#10); the rule is not.
+
+## Data locality
+
+Personal or sensitive system data MUST NOT be sent to a remote model by default.
+Using a remote model requires permission and policy, and the OS MUST keep working
+without one. See [02-architecture.md](02-architecture.md).
+
 ## Permission-based execution
 
 A model-generated program MUST NOT be able to reach the whole user system. Each
