@@ -4,6 +4,28 @@ The project does not build a complete independent operating system first. It
 implements and verifies the core technology in stages, then extends the system.
 Each stage has a single question it must answer before the next begins.
 
+## The first milestone
+
+The first public milestone is **PoC success**, and it is defined precisely
+([13-poc.md](13-poc.md), #1): a Capability is created, executed, replaced at
+runtime with state migration, and the result is verified — not a demo screen that
+merely appears. Publicising the project (GitHub-centred, with Hacker News if the
+result is interesting) follows PoC success (#2, later).
+
+## Versioning
+
+The project starts at **0.1.0** and reaches **1.0.0** when the core architecture
+and the public API stabilise (#10). Semantic Versioning applies from 0.1.0, but
+early compatibility is explicitly limited: pre-1.0, a minor version MAY break
+compatibility, and the changelog says so.
+
+## Repository shape
+
+The compiler, runtime and AIR are co-evolving, so the project stays a **monorepo**
+until their boundaries stabilise (#5). Software understanding is the one
+exception: it is a separate research project
+([08-software-understanding.md](08-software-understanding.md), #17).
+
 ## Stage 0 · System specification
 
 **Goal:** fix the project's basic concepts and execution model.
@@ -109,8 +131,9 @@ Work:
 
 Work:
 
-- install image
+- a **minimal bootable system first**, not a full desktop OS (#60)
 - boot and system services
+- install image
 - packaging
 - updates
 - hardware compatibility
@@ -118,9 +141,11 @@ Work:
 - long-term research into a self-hosted kernel and the feasibility of migrating
   to it
 
-`Open question:` the kernel strategy
-([16-open-questions.md](16-open-questions.md), item 18). The current decision is
-to stay on Linux and keep the option open.
+**Self-hosted kernel research begins only after Stages 0–4 have proven the core
+hypothesis on the existing kernel** (#59). The point is not to abandon a
+self-hosted kernel; it is to first demonstrate the reason one is needed — a
+requirement the existing kernel cannot meet. Until then, the runtime is a
+**user-space runtime on the existing OS**.
 
 ## How the stages are judged
 
