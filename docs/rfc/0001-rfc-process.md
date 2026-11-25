@@ -47,6 +47,10 @@ A contributor who wants to change a contested decision:
   value.
 - An RFC MUST NOT change a design principle or the security model without
   maintainer consensus ([GOVERNANCE.md](../../GOVERNANCE.md)).
+- RFCs are approved by the **maintainers**. An RFC that touches **security, the
+  module ABI, or compatibility** requires additional review beyond the normal
+  one, because those decisions are the hardest to reverse
+  ([16-open-questions.md](../16-open-questions.md), #9).
 - The RFC index in [`README.md`](README.md) MUST list every RFC with its status.
 
 ## Drawbacks

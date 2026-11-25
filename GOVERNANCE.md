@@ -8,6 +8,12 @@ reference implementation. The model is intentionally simple while the project is
 pre-1.0 and pre-MVP. It can change when the contributor base is large enough to
 need it.
 
+**The project starts with a single maintainer** (#6). Merge rights are granted to
+someone who understands the core architecture and has shown real contribution —
+not by count, but by judgment. Until then, the project deliberately stays small;
+growing the team faster than the architecture can be understood makes review
+weaker, not stronger (#61).
+
 ## Who decides what
 
 - **Routine changes** (bug fixes, documentation, tests, small implementation
@@ -17,6 +23,9 @@ need it.
   not the author, and must update the authoritative document before or with the
   implementation. A contested specification change becomes an RFC in
   `docs/rfc/`.
+- **RFCs are approved by the maintainers** (#9). An RFC that touches security,
+  the module ABI, or compatibility requires **additional review** beyond the
+  normal one, because those decisions are the hardest to reverse.
 - **Changes to the philosophy, the security model or the license** need
   consensus among the maintainers.
 
@@ -41,6 +50,19 @@ a contribution count.
 A maintainer with a financial or personal stake in a decision should say so and
 step back from the final call. Reviewers are expected to judge a change against
 the specification, not against the author or the organization behind it.
+
+## Research, papers and patents
+
+Competitions and papers are pursued actively (#7). **Patents are considered only
+for technology whose novelty is concretely established**, and patentability is
+reviewed **before** public disclosure. A public commit is a disclosure, so the
+order matters.
+
+## Communication
+
+The default channel is **GitHub Discussions** (#63). Real-time chat (Discord) is
+introduced only when collaborative work actually needs it; Slack is considered
+too heavy for an early open-source project.
 
 ## Changing this document
 

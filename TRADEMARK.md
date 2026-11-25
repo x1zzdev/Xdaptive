@@ -1,5 +1,8 @@
 # Trademark policy
 
+> **Status: draft.** This policy is a working draft, not legal advice. Legal
+> review is required before any trademark registration or commercial use (#4).
+
 The Apache-2.0 license covers the **code and the specification** in this
 repository. It does not grant rights to the project's names or marks.
 
