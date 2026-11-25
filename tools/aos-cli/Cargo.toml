@@ -1,0 +1,17 @@
+[package]
+name = "aos"
+description = "The `aos` command-line entry point for Xdaptive."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "aos"
+path = "src/main.rs"
+
+[lints]
+workspace = true

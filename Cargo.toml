@@ -1,0 +1,28 @@
+[workspace]
+resolver = "3"
+members = [
+    "adaptation/adaptive-ir",
+    "core/adaptive-core",
+    "tools/aos-cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "Apache-2.0"
+repository = "https://github.com/x1zzdev/Xdaptive"
+homepage = "https://github.com/x1zzdev/Xdaptive"
+authors = ["Jangseowoo (x1zz) <ax1s@x1zz.com>"]
+
+[workspace.dependencies]
+adaptive-core = { path = "core/adaptive-core", version = "0.1.0" }
+adaptive-ir = { path = "adaptation/adaptive-ir", version = "0.1.0" }
+
+# Shared lint policy. Every crate opts in with `[lints] workspace = true`.
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }
