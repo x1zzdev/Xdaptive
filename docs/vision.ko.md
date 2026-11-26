@@ -1756,3 +1756,31 @@ idempotent/compensable 선언, 서명된 검증 기록이 더 정확하고 더 �
 - **분석 충실도(#94).** 프록시 → 래퍼 → 재구현 → 차등 검증. 재구현은 대체가 아니라 승격.
 
 상세 근거: `Xdaptive-process/discussions/2026-11-26-design-round-4.md`.
+
+# 부록 I. 2026-11-26 AIR 최소 문법·자료형 체계 확정 (RFC 0003)
+
+Stage 0 AIR의 문법(EBNF)과 자료형 체계를 동결했다. 파서·타입 검사기·바이트코드
+검증기가 하나의 정규형을 공유한다. 권위 문서는 `docs/05-adaptive-ir.md`이며,
+RFC 0003은 결정 기록이다. 스키마 버전 `0.1`.
+
+- **스키마 버전(#17).** 문서는 `air <major>.<minor>;`로 시작. 모르는 major는 거부,
+  더 새로운 minor는 거부, 이전 버전은 전진 마이그레이션. (호환성 매트릭스의 첫 축)
+- **자료형(#14, #15).** 기본 타입은 전역 `Int`/`Float`/`Bool`/`String`/`Table`/
+  `Tensor`. 명목 타이핑 기본 — `type Name { ... }`는 같은 이름끼리만 호환. 구조적
+  호환은 `type Name structural { ... }`로 명시적 옵트인. 연결은 양 끝점이 서로를
+  받아들일 때만 유효(대칭).
+- **Option과 presence(#80, #86).** `Option<T>`는 값의 선택성(값 타입),
+  `name?: T`는 필드 존재성(레코드 수준). `?`는 필드에만, 필수 필드 부재는 기본
+  오류, 기본값은 명시 선언 시에만.
+- **데이터 전달(#16).** 연결은 `by value`/`by reference`/`by streaming`. 생략 시
+  value 기본. 큰 페이로드는 값 복사 금지 — 컴파일러가 reference/streaming으로 승격.
+- **권한·자원(#19).** AIR는 선언만, Runtime이 부여·집행. 파일(read/write/create/
+  delete + 경로 범위), 네트워크(in/out/inout + 목적지)의 세분화 권한. 자원은
+  이름(cpu/memory/gpu/power)·양·단위로 선언.
+- **계약(#18).** Capability 본문의 `requires`(사전)/`ensures`(사후). Stage 0은 표현만,
+  집행은 Stage 3. 단언은 포트 위의 타입 있는 구조적 비교.
+- **정규형.** 연결은 항상 `connect` 문(인라인 `input =` 없음). 게이트는 Capability에
+  속하고, 순서는 데이터 흐름이 함의. 교체(`replace`)는 별칭 유지. 제거·제어 전용
+  엣지는 후속 RFC.
+
+상세 근거: `docs/rfc/0003-air-grammar-and-type-system.md`.
