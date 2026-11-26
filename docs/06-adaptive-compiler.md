@@ -49,10 +49,22 @@ extension**, not a Stage 0 feature
 
 ## The bytecode VM and the native backend
 
-- The bytecode path is a **minimal project VM** (#20). It starts with a verifier
-  and a limited instruction set; a complex VM is not built up front.
+- The bytecode path is a **minimal project VM** (#20), and it is a **stack
+  machine** (#79). A stack machine keeps the instruction format simple, the
+  generator easy, and the stack state easy to verify statically. A register
+  machine is a later performance option.
+- **Static verification is mandatory** (#79). Before execution the verifier MUST
+  check: every instruction is valid; the stack neither underflows nor overflows;
+  every branch target is valid; the stack state agrees across branch paths;
+  operand types match; and no disallowed memory access or instruction appears.
+  Invalid bytecode is **rejected before it runs**, not caught at runtime.
+- Verification is not execution safety: infinite loops and excessive memory use
+  need separate **resource limits**, which Stage 0 provides the structure for.
 - The native backend's first candidate is **LLVM** (#21). Cranelift is compared
   when fast compilation and JIT matter more than peak code quality.
+
+The verifier is part of the trusted computing base, so its own correctness
+matters: a verifier bug is a security bug, not a correctness bug.
 
 ## Implementation languages
 
@@ -74,6 +86,22 @@ both native and bytecode modules.
 - error handling (a common success/failure result rule),
 - one asynchronous execution rule (await and receive a result),
 - an **explicit ABI version field**.
+
+### Value passing
+
+Value passing is a **normalized ABI plus large-data handles** (#78):
+
+- **Small values** — integers, floats, booleans, strings, small structs — pass by
+  value in the normalized ABI, with an explicit type and length.
+- **Large data** — arrays, tables, buffers — passes as a **runtime-managed
+  handle**. A handle is a resource identifier owned by the runtime, **not a raw
+  memory address**, so the interface survives a module moving out of process
+  (Stage 1) unchanged.
+- A handle has a defined **owner and lifetime**. The ABI MUST state who frees it
+  and when, or a handle can outlive its data.
+
+A handle is **not** zero-copy by itself. Real memory sharing is a later
+optimization to be measured, not assumed.
 
 Deferred to later RFCs, based on implementation evidence: complex ownership and
 lifetime rules, zero-copy transfer of large data, streaming-transfer details, GPU
