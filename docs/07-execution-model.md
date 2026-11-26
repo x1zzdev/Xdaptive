@@ -151,10 +151,34 @@ Draining cannot wait forever. The order of preference is:
 5. if neither cancellation nor recovery is safe, **reject the swap**.
 
 **A cancellation request is not a completed cancellation.** A Capability that has
-received a request may not be able to stop safely at once, and an irreversible
-operation (an external call, a database transaction) needs its own policy. The
-runtime MUST enforce a hard upper bound and MUST reject rather than force a swap
-that cannot be drained or cancelled safely.
+received a request may not be able to stop safely at once.
+
+### The hard bound
+
+The runtime enforces a **hard upper bound on draining**, independent of any
+Capability's declaration. The declaration says *how* to drain (where a safe point
+is); it never says *whether* a bound applies. The bound is a **Workspace policy**
+with a global default, because different tasks tolerate different drain times.
+
+On exceeding the bound, the runtime **rejects the swap and rolls back** to the
+running Capability. It MUST NOT force-kill a Capability that holds state, because
+that loses the state the whole policy exists to protect (principle 12). The one
+exception is a Capability declared **disposable** — pure or stateless — which the
+runtime MAY force-stop, since there is no state to lose.
+
+### External side effects
+
+A Capability with an external side effect (an API call, a database transaction)
+is not swapped by force. It is swapped only when the side effect is declared as
+one of:
+
+- **idempotent** — re-running it is safe, so drain and retry is acceptable; or
+- **compensable** — a compensating action is declared, so the effect can be
+  undone.
+
+If neither is declared, the swap is rejected. Stage 0 defines these declarations
+in the manifest and exercises the no-side-effect case in the PoC; the mechanism
+exists from the start rather than being bolted on later.
 
 ## Isolation
 
