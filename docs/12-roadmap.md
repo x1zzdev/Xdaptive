@@ -26,6 +26,39 @@ until their boundaries stabilise (#5). Software understanding is the one
 exception: it is a separate research project
 ([08-software-understanding.md](08-software-understanding.md), #46).
 
+## Development environment
+
+**Linux is the primary target; WSL2 is allowed for development**
+([16-open-questions.md](16-open-questions.md), #83). Day-to-day Rust work, builds
+and unit tests may run on WSL2, but isolation and process tests MUST run on real
+Linux, which CI provides:
+
+| Work | Environment |
+|---|---|
+| Rust development, build, unit tests | WSL2 or Linux |
+| Linux integration tests | real Linux (CI) |
+| isolation and process tests | real Linux |
+| hardware and GPU tests | a dedicated environment |
+
+A result on WSL2 does not establish that namespaces, cgroups or isolation behave
+correctly; those claims need real Linux. Stage 0 stays a **user-space prototype on
+Linux**; self-hosted kernel work and an independent distribution do not begin
+until Stage 0 is verified.
+
+## Stage completion criteria
+
+A stage is complete when its criteria are met, not on a date:
+
+| Stage | Complete when |
+|---|---|
+| 0 | the Capability run-and-swap PoC succeeds |
+| 1 | execution isolation and external modules work |
+| 2 | AIR and the resolver are extended |
+| 3 | the compiler and contract verification are strengthened |
+| 4 | AI-driven composition works |
+| 5 | the UI and user experience work |
+| 6 | the system is integrated and distributable |
+
 ## Stage 0 · System specification
 
 **Goal:** fix the project's basic concepts and execution model.
