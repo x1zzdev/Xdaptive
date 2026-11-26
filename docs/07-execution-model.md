@@ -166,6 +166,50 @@ that loses the state the whole policy exists to protect (principle 12). The one
 exception is a Capability declared **disposable** — pure or stateless — which the
 runtime MAY force-stop, since there is no state to lose.
 
+### Cancellation protocol
+
+Cancellation is **cooperative**: the runtime issues a **cancellation token**, and
+the Capability acknowledges at a **safe point it declares**
+([16-open-questions.md](16-open-questions.md), #89):
+
+```text
+RUNNING → CANCEL_REQUESTED → SAFE POINT REACHED → CLEANUP → CANCELLED
+```
+
+- **`await` is not automatically a safe point.** A cancellation during a database
+  commit can break consistency, so safe points are declared, not inferred from
+  await boundaries.
+- **Cancellation is not rollback.** Work already done externally is handled by
+  compensation, not by cancellation.
+- **An unresponsive Capability is bounded**: after a grace period the runtime MAY
+  terminate an isolated process as a last resort, but it MUST NOT claim that
+  external side effects were undone.
+- The execution state is explicit: `Running`, `CancelRequested`, `Cancelling`,
+  `Cancelled`, `Completed`, `Failed`.
+
+### Compensation
+
+A Capability **declares** its compensation action and conditions; the runtime
+owns the compensation **lifecycle** (#90). The division is: *the Capability owns
+the compensation semantics, the runtime owns the compensation lifecycle.* The
+manifest carries:
+
+```text
+compensation:
+  action: refund
+  retryable: true
+  idempotent: true
+  timeout: 30s
+```
+
+The runtime decides the order and executes; a transaction manager tracks the
+compensation state and history; storage persists the progress so a compensation
+can be recovered after a restart. The runtime MUST handle idempotency, retry,
+durability, partial failure (some compensations succeed and others do not), and a
+Capability that is explicitly **not compensable**. Compensation is distinct from
+atomic rollback: undoing an external effect is not the same as reverting a
+transaction.
+
 ### External side effects
 
 A Capability with an external side effect (an API call, a database transaction)
