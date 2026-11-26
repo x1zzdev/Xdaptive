@@ -75,6 +75,13 @@ hypothesis.
 | 75 | **The model discovers Capabilities through structured registry queries (tool calling).** RAG is an optional discovery aid, never an execution authority; discovery, selection, validation, authorization and execution are separate. | [02-architecture.md](02-architecture.md), [09-security-model.md](09-security-model.md) |
 | 76 | **Distribution is crates.io plus GitHub Releases**, with a local Capability Registry and a language-independent Manifest. Install integrity and execution permission are verified separately. | [02-architecture.md](02-architecture.md) |
 | 77 | **Generated Capability code is user-owned; the tool is Apache-2.0.** External code and model terms are respected separately. | [GENERATED-CODE-POLICY.md](../GENERATED-CODE-POLICY.md) |
+| 78 | **ABI value passing is a normalized ABI plus large-data handles.** Small values pass by value; large data passes as a runtime-managed handle (a resource id, not a raw address). | [06-adaptive-compiler.md](06-adaptive-compiler.md) |
+| 79 | **The VM is a stack machine with mandatory static verification.** Invalid bytecode is rejected before execution; loop and memory limits are a separate mechanism. | [06-adaptive-compiler.md](06-adaptive-compiler.md), [07-execution-model.md](07-execution-model.md) |
+| 80 | **AIR separates Nullable (`Option<T>`) from Missing (field presence)** and uses **explicit namespaces**. | [05-adaptive-ir.md](05-adaptive-ir.md), [04-capability-model.md](04-capability-model.md) |
+| 81 | **A swap drains gracefully first and cancels only when safe.** Running → Draining → Stopped, with a hard timeout, a declared cancel-safety, and swap rejection when neither drain nor cancel is safe. | [07-execution-model.md](07-execution-model.md), [10-adaptation-transactions.md](10-adaptation-transactions.md) |
+| 82 | **Determinism is a three-level model** — bitwise (integers, serialization), numerical (tolerance), best-effort (GPU/parallel). The level is declared and **verified**, not trusted. | [14-evaluation.md](14-evaluation.md), [13-poc.md](13-poc.md) |
+| 83 | **Linux is the primary target; WSL2 is allowed for development.** Isolation and process tests run on real Linux (CI). | [12-roadmap.md](12-roadmap.md) |
+| 84 | **Observability is structured event tracing** (a trace id per swap); **testing is layered** (unit, integration, golden, property, failure/swap). | [14-evaluation.md](14-evaluation.md), [02-architecture.md](02-architecture.md) |
 
 The Appendix B decisions were answered before the 63-question round and are
 renumbered here (#64–#69) so that every reference has one unique number. A bare
