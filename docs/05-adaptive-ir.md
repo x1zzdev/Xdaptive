@@ -67,6 +67,38 @@ types provided as base types. Two rules govern compatibility:
   type, the semantic contract, the preconditions and the postconditions all
   agree. A connection that passes on type alone is not proven safe.
 
+### Base types and namespaces
+
+Stage 0 defines a base type set — integer, float, boolean, string, table and
+tensor — and **explicit namespaces** (#80): `core::Int`, `csv::Row`,
+`statistics::Result`. Namespaces are required because Capabilities from different
+sources may define the same name; an explicit namespace keeps them distinct, and
+a connection between Capabilities checks compatibility explicitly rather than
+relying on a name match.
+
+### Nullable and missing
+
+AIR separates two absences that a single `null` would merge (#80):
+
+- **Nullable** — the field exists but its value is empty: `Option<T>`.
+- **Missing** — the field itself is not provided: field presence.
+
+```text
+Student {
+    score:   Option<Float>,   // present field, possibly no value
+    comment: Presence<String>, // the field itself may be absent
+}
+```
+
+The distinction matters because a recorded-but-empty score and a score that was
+never entered are different facts. `Option<T>` is a **value type**; missing-ness
+is a **field-presence** property, and the concrete names (`Presence<T>` and the
+exact syntax) are settled in the AIR grammar RFC before implementation, because
+`Optional` collides with `Option` in other languages.
+
+Generics are otherwise deferred (#80 follow-up): `Option<T>` and presence are
+built in, not general user generics.
+
 ### Data passing
 
 A connection carries data in one of three modes (#16):
