@@ -70,34 +70,37 @@ types provided as base types. Two rules govern compatibility:
 ### Base types and namespaces
 
 Stage 0 defines a base type set — integer, float, boolean, string, table and
-tensor — and **explicit namespaces** (#80): `core::Int`, `csv::Row`,
-`statistics::Result`. Namespaces are required because Capabilities from different
-sources may define the same name; an explicit namespace keeps them distinct, and
-a connection between Capabilities checks compatibility explicitly rather than
-relying on a name match.
+tensor (#80). **Primitives are global** (`Int`, `Float`, `String`, …); only
+**user-defined and Capability-defined types are namespaced** (`csv::Row`,
+`statistics::Result`). Namespacing the primitives (`core::Int`) would put a
+prefix on every expression for no benefit. Namespaces exist because Capabilities
+from different sources may define the same name; a connection between two
+Capabilities checks compatibility explicitly rather than relying on a name match.
 
 ### Nullable and missing
 
 AIR separates two absences that a single `null` would merge (#80):
 
-- **Nullable** — the field exists but its value is empty: `Option<T>`.
-- **Missing** — the field itself is not provided: field presence.
+- **Nullable** — the value may be absent: `Option<T>`, a **value type**.
+- **Missing** — the field itself may be omitted: **field presence**, a
+  **record/schema-level** property, not a value type.
 
 ```text
 Student {
-    score:   Option<Float>,   // present field, possibly no value
-    comment: Presence<String>, // the field itself may be absent
+    score:  Option<Float>,   // required field, value may be absent
+    comment?: String,        // the field itself may be omitted
 }
 ```
 
-The distinction matters because a recorded-but-empty score and a score that was
-never entered are different facts. `Option<T>` is a **value type**; missing-ness
-is a **field-presence** property, and the concrete names (`Presence<T>` and the
-exact syntax) are settled in the AIR grammar RFC before implementation, because
-`Optional` collides with `Option` in other languages.
+A recorded-but-empty score and a score that was never entered are different
+facts, so the two are kept apart. But presence belongs to the record, not the
+value: `Presence<T>` is **not** a value type. A field is either required
+(`name: T`) or may be omitted (`name?: T`); absence is resolved at the mapping or
+serialization boundary. The exact presence syntax is settled in the AIR grammar
+RFC.
 
-Generics are otherwise deferred (#80 follow-up): `Option<T>` and presence are
-built in, not general user generics.
+`Option<T>` is a **built-in type constructor**, not a user generic. General user
+generics are deferred (#80 follow-up); a built-in `Option` does not require them.
 
 ### Data passing
 
