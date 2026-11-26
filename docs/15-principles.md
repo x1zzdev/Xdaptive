@@ -40,6 +40,19 @@ changed first.
     without naming how it is measured. See
     [14-evaluation.md](14-evaluation.md).
 
+## Three more principles
+
+11. **Semantics before optimization.** Zero-copy, GPU shared memory, JIT and
+    native promotion are settled only after data ownership and result meaning
+    are. Optimizing an undefined meaning is premature.
+
+12. **The runtime may refuse.** When state cannot migrate, a permission is
+    missing, or a module is incompatible, refusing to run is the correct
+    behaviour. The runtime is not required to make every change succeed.
+
+13. **Success is the minimal path, not a feature count.** A stage is judged by
+    whether its core path works end to end, not by how many features exist.
+
 ## The five architectural principles
 
 The ten principles above are the project's values. These five are how the

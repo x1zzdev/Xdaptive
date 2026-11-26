@@ -29,7 +29,8 @@ others rather than repeating them.
 | [13-poc.md](13-poc.md) | The first proof of concept |
 | [14-evaluation.md](14-evaluation.md) | What gets measured |
 | [15-principles.md](15-principles.md) | The ten design principles |
-| [16-open-questions.md](16-open-questions.md) | Decisions still open |
+| [16-open-questions.md](16-open-questions.md) | The decision ledger (status and tiers) |
+| [17-adr.md](17-adr.md) | The consolidated architecture decision record |
 
 [vision.ko.md](vision.ko.md) is the original Korean master vision. It is the
 source this specification was derived from; when a decision changes, update the
