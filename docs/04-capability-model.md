@@ -75,7 +75,9 @@ At Stage 0 the contract part of this rule is a **declaration only**: the
 structural representation of preconditions and postconditions is defined, but
 enforcement is deferred to Stage 3
 ([RFC 0002](rfc/0002-stage0-execution-contract.md)). Type and connection
-checking still apply.
+checking still apply. The concrete type grammar and the nominal/structural
+compatibility rules are frozen in
+[RFC 0003](rfc/0003-air-grammar-and-type-system.md).
 
 ## Permissions
 

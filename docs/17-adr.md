@@ -54,6 +54,12 @@ type system and the async policy complete the execution semantics.
 
 - A **declarative DSL**, not a language for executable logic (#13).
 - Its **own type system** (#14) with **nominal typing** by default (#15).
+- The **Stage 0 grammar is frozen at schema `0.1`** by
+  [RFC 0003](rfc/0003-air-grammar-and-type-system.md): a document begins with
+  `air <major>.<minor>;`, a Capability is bound (not written), a connection is an
+  explicit `connect` edge with a value/reference/streaming mode, a gate is a
+  typed comparison over a port, and a contract is `requires`/`ensures` in a
+  Capability body. One canonical form per construct.
 - **Connections and bounded conditional gates (`if`/`when`); no general
   iteration** (#72). Conditions are typed and structural; repetition belongs to a
   Capability or a streaming engine.

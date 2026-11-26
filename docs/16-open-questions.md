@@ -45,11 +45,11 @@ hypothesis.
 | 10 | Start at **0.1.0**; reach **1.0.0** when the core architecture and public API stabilise. SemVer applies, with limited early compatibility. | [README.md](README.md) |
 | 12 | Keep **topic-separated** docs; merge duplicates. | [README.md](README.md) |
 | 13 | AIR is a **declarative DSL** that expresses structure and relationships, not executable code. | [05-adaptive-ir.md](05-adaptive-ir.md) |
-| 14 | AIR has its **own type system** with numeric, string, table and tensor base types. | [04-capability-model.md](04-capability-model.md), [05-adaptive-ir.md](05-adaptive-ir.md) |
-| 15 | **Nominal typing** is the default; structural compatibility is an explicit opt-in. | [04-capability-model.md](04-capability-model.md) |
-| 16 | Data passing supports **value, reference and streaming**; copying GB-scale data is prohibited. | [04-capability-model.md](04-capability-model.md) |
-| 17 | AIR documents carry an **explicit schema version** and a migration path. | [05-adaptive-ir.md](05-adaptive-ir.md) |
-| 19 | AIR **declares** permissions and resource needs; the runtime **grants and enforces** them. | [05-adaptive-ir.md](05-adaptive-ir.md), [09-security-model.md](09-security-model.md) |
+| 14 | AIR has its **own type system** with numeric, string, table and tensor base types; the grammar is frozen at schema `0.1` by [RFC 0003](rfc/0003-air-grammar-and-type-system.md). | [04-capability-model.md](04-capability-model.md), [05-adaptive-ir.md](05-adaptive-ir.md) |
+| 15 | **Nominal typing** is the default; structural compatibility is an explicit opt-in (declared `structural`). | [04-capability-model.md](04-capability-model.md), [RFC 0003](rfc/0003-air-grammar-and-type-system.md) |
+| 16 | Data passing supports **value, reference and streaming**; copying GB-scale data is prohibited. | [04-capability-model.md](04-capability-model.md), [RFC 0003](rfc/0003-air-grammar-and-type-system.md) |
+| 17 | AIR documents carry an **explicit schema version** (`air <major>.<minor>;`) and a migration path. | [05-adaptive-ir.md](05-adaptive-ir.md), [RFC 0003](rfc/0003-air-grammar-and-type-system.md) |
+| 19 | AIR **declares** permissions and resource needs (fine-grained file/network scopes; named resources); the runtime **grants and enforces** them. | [05-adaptive-ir.md](05-adaptive-ir.md), [09-security-model.md](09-security-model.md), [RFC 0003](rfc/0003-air-grammar-and-type-system.md) |
 | 20 | A **minimal project bytecode VM**, starting with a verifier and a limited instruction set. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |
 | 22 | A **minimal project Module ABI** (value passing, error handling, one async rule) with an explicit **version field** and a compatibility check before a module runs; advanced ownership, streaming and hardware conventions are deferred. Stage 0 validates one **bytecode** module call. | [06-adaptive-compiler.md](06-adaptive-compiler.md), [07-execution-model.md](07-execution-model.md), [RFC 0002](rfc/0002-stage0-execution-contract.md) |
 | 23 | Target isolation is the **process boundary**; untrusted model code runs in the **VM sandbox**. **Stage 0 is the exception: in-process, trusted code only, behind an execution interface.** gVisor/Firecracker are not early requirements. | [07-execution-model.md](07-execution-model.md), [RFC 0002](rfc/0002-stage0-execution-contract.md) |
@@ -102,7 +102,7 @@ renumbered here (#64–#69) so that every reference has one unique number. A bar
 | # | Direction | Owner |
 |---|---|---|
 | 11 | CI grows in stages: doc-link check, markdownlint, cargo test, clippy, cargo-deny first; then cargo audit and coverage. Coverage is not a goal by itself. | [.github/workflows/ci.yml](../.github/workflows/ci.yml) |
-| 18 | Compatibility considers type **plus** semantic contract, preconditions and postconditions. Stage 0 defines the **representation only**; enforcement is Stage 3 ([RFC 0002](rfc/0002-stage0-execution-contract.md)). | [04-capability-model.md](04-capability-model.md), [05-adaptive-ir.md](05-adaptive-ir.md) |
+| 18 | Compatibility considers type **plus** semantic contract, preconditions and postconditions. Stage 0 defines the **representation only** (`requires`/`ensures` in a Capability body); enforcement is Stage 3 ([RFC 0002](rfc/0002-stage0-execution-contract.md), [RFC 0003](rfc/0003-air-grammar-and-type-system.md)). | [04-capability-model.md](04-capability-model.md), [05-adaptive-ir.md](05-adaptive-ir.md) |
 | 21 | **LLVM** is the first native backend candidate; Cranelift is compared when fast JIT matters. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |
 | 24 | **async/await + channels**; a full actor model is not introduced up front. | [07-execution-model.md](07-execution-model.md) |
 | 25 | Incremental compilation is per Capability, **plus** dependents of a changed dependency. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |

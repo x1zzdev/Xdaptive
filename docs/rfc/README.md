@@ -38,3 +38,4 @@ The full process is [0001-rfc-process.md](0001-rfc-process.md). In short:
 |---|---|---|
 | [0001](0001-rfc-process.md) | The RFC process | accepted |
 | [0002](0002-stage0-execution-contract.md) | The Stage 0 execution contract | accepted |
+| [0003](0003-air-grammar-and-type-system.md) | The Stage 0 AIR grammar and type system | accepted |

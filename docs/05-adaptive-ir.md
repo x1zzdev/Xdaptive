@@ -70,12 +70,37 @@ types provided as base types. Two rules govern compatibility:
 ### Base types and namespaces
 
 Stage 0 defines a base type set — integer, float, boolean, string, table and
-tensor (#80). **Primitives are global** (`Int`, `Float`, `String`, …); only
-**user-defined and Capability-defined types are namespaced** (`csv::Row`,
-`statistics::Result`). Namespacing the primitives (`core::Int`) would put a
-prefix on every expression for no benefit. Namespaces exist because Capabilities
-from different sources may define the same name; a connection between two
-Capabilities checks compatibility explicitly rather than relying on a name match.
+tensor (#80), written `Int`, `Float`, `Bool`, `String`, `Table` and `Tensor`.
+**Primitives are global**; only **user-defined and Capability-defined types are
+namespaced** (`csv::Row`, `statistics::Result`). Namespacing the primitives
+(`core::Int`) would put a prefix on every expression for no benefit. Namespaces
+exist because Capabilities from different sources may define the same name; a
+connection between two Capabilities checks compatibility explicitly rather than
+relying on a name match.
+
+A named type is declared with `type` and is **nominal by default** (#15):
+
+```air
+type csv::Row {
+    label: String;
+    value: Float;
+}
+```
+
+A nominal type is compatible only with itself. Structural compatibility is the
+explicit opt-in, declared with `structural`:
+
+```air
+type Point structural {
+    x: Float;
+    y: Float;
+}
+```
+
+A `structural` type is compatible with any record type whose field names, order,
+types, presence and defaults are identical. Compatibility is symmetric, so both
+endpoints of a connection must accept the other. The full type grammar and rules
+are frozen in [RFC 0003](rfc/0003-air-grammar-and-type-system.md).
 
 ### Nullable and missing
 
@@ -113,14 +138,17 @@ A connection carries data in one of three modes (#16):
 - **reference** — shared data is passed by reference;
 - **streaming** — large data is streamed.
 
-Copying GB-scale data is prohibited: the compiler MUST choose reference or
-streaming for large payloads.
+The mode is written `by value`, `by reference` or `by streaming` on the
+connection; omitting it defaults to **value**. Copying GB-scale data is
+prohibited: the compiler MUST choose reference or streaming for large payloads,
+promoting a declared or defaulted `value` when the payload is large.
 
 ### Schema versioning
 
-An AIR document carries an **explicit schema version** (#17). The compiler MUST
-be able to read a previous version and migrate it forward; a document with an
-unknown version is rejected rather than guessed at.
+An AIR document carries an **explicit schema version** (#17), written
+`air <major>.<minor>;` at the top. The compiler MUST be able to read a previous
+version and migrate it forward; a document with an unknown **major** version, or
+a newer **minor** than the compiler accepts, is rejected rather than guessed at.
 
 ### Dimensional and unit types
 
@@ -137,7 +165,11 @@ the PoC.
 AIR **declares** the permissions and resource requirements a composition needs
 (#19). It does not grant them. The runtime grants and enforces them
 ([09-security-model.md](09-security-model.md)), and a composition that uses a
-permission it did not declare MUST fail validation.
+permission it did not declare MUST fail validation. Permissions are declared
+fine-grained — a **file** permission names an access mode (`read`, `write`,
+`create`, `delete`) and an optional path scope; a **network** permission names a
+direction (`in`, `out`, `inout`) and an optional destination — and resources are
+declared as a name (`cpu`, `memory`, `gpu`, `power`), an amount and a unit.
 
 ## Interface declaration
 
@@ -150,7 +182,9 @@ not absorbing the presentation layer.
 
 AIR and the manifest **express** preconditions and postconditions; nothing
 evaluates them at Stage 0 ([RFC 0002](rfc/0002-stage0-execution-contract.md),
-#18). Stage 0 fixes only:
+#18). A contract belongs to a Capability and is written `requires` (precondition)
+and `ensures` (postcondition) inside its body; an assertion is a typed,
+structural comparison over a port, the same shape as a gate. Stage 0 fixes only:
 
 - the distinction between a precondition and a postcondition;
 - that a contract belongs to a Capability;
@@ -171,25 +205,96 @@ deliberately avoids designing a large DSL up front.
 The initial constructs are:
 
 - **workspace declaration** — a task environment with a goal
-- **capability declaration** — bind a Capability, enable or disable it, configure
-  it
+- **capability declaration** — bind a Capability, enable or disable it (a scalar
+  setting), configure it
 - **data-flow connection** — connect one Capability's output to another's input
-- **workflow connection** — declare ordering and conditions
+- **workflow connection** — ordering (implied by data flow) and a **gate**, a
+  typed condition on a Capability
 - **interface composition** — declare panels and controls
 - **permission declaration** — the permissions the composition requires
 - **state migration declaration** — how existing state carries across a change
 
-### Illustrative sketch
+### Grammar (Stage 0)
 
-The following is a sketch to make the shape concrete. It is **not** a frozen
-grammar; the grammar is settled by RFC before the parser is written.
+The Stage 0 grammar is **frozen by [RFC 0003](rfc/0003-air-grammar-and-type-system.md)**,
+so the parser, the type checker and the bytecode verifier share one canonical
+shape. This document is the authority; the RFC is the decision record. The
+grammar is settled at schema version `0.1` and grows by RFC.
+
+```ebnf
+document        = schema, declaration, EOF ;
+schema          = "air", integer, ".", integer, ";" ;
+
+declaration     = workspace | plan ;
+
+workspace       = "workspace", string, "{", { workspace-item }, "}" ;
+workspace-item  = goal | type-decl | capability | connect
+                | interface | permission | resource ;
+
+goal            = "goal", string ;
+
+capability      = "capability", qualified-name, "as", identifier,
+                  [ body ], [ gate ] ;
+body            = "{", { body-item, ";" }, "}" ;
+body-item       = setting | precondition | postcondition ;
+setting         = identifier, "=", literal ;
+precondition    = "requires", assertion ;
+postcondition   = "ensures", assertion ;
+gate            = "when", assertion ;
+assertion       = port-ref, comparator, literal ;
+comparator      = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
+port-ref        = identifier, ".", identifier ;
+
+connect         = "connect", port-ref, "->", port-ref, [ passing ] ;
+passing         = "by", ( "value" | "reference" | "streaming" ) ;
+
+interface       = "interface", "{", { panel }, "}" ;
+panel           = "panel", string, "{", { identifier }, "}" ;
+
+permission      = "permission", ( file-permission | net-permission ) ;
+file-permission = "file", file-access, [ string ] ;
+file-access     = "read" | "write" | "create" | "delete" ;
+net-permission  = "network", net-direction, [ string ] ;
+net-direction   = "in" | "out" | "inout" ;
+
+resource        = "resource", resource-name, "=", number, [ unit ] ;
+resource-name   = "cpu" | "memory" | "gpu" | "power" ;
+number          = integer | float ;
+unit            = "ms" | "s" | "MB" | "GB" | "%" | "W" ;
+
+type-decl       = "type", qualified-name, [ "structural" ], record-body ;
+record-body     = "{", { field }, "}" ;
+field           = identifier, [ "?" ], ":", type-ref, [ "=", literal ], ";" ;
+type-ref        = ( "Option", "<", type-ref, ">" ) | qualified-name ;
+
+plan            = "plan", "extend", string, "{", { plan-item }, "}" ;
+plan-item       = goal | type-decl | add | replace | connect
+                | interface | permission | resource | migration ;
+add             = "add", capability ;
+replace         = "replace", identifier, "with", qualified-name,
+                  [ body ], [ gate ] ;
+migration       = "migrate", identifier, "->", identifier, [ "by", "re-derive" ] ;
+```
+
+A document begins with its **schema version** and declares a workspace or a plan.
+A Capability is **bound** to an alias and never written in AIR; a connection is
+an explicit `connect` edge; a gate is a typed comparison over a port; a contract
+is `requires`/`ensures` inside a Capability body. The type system and the
+permission/resource declarations are specified in
+[RFC 0003](rfc/0003-air-grammar-and-type-system.md).
+
+The two examples that follow are valid Stage 0 documents.
 
 ```air
+air 0.1;
+
 workspace "sales-analysis" {
     goal "Analyse sales.csv and show the data"
 
     capability csv.reader as reader { source = "sales.csv" }
-    capability data.viewer as viewer { input = reader.rows }
+    capability data.viewer as viewer
+
+    connect reader.rows -> viewer.input
 
     interface {
         panel "data" { viewer }
@@ -201,9 +306,14 @@ A change that adds correlation analysis and a scatter plot, while keeping the
 existing reader and viewer state:
 
 ```air
+air 0.1;
+
 plan extend "sales-analysis" {
-    add capability stats.correlation as corr { input = reader.rows }
-    add capability chart.scatter as scatter { input = corr.result }
+    add capability stats.correlation as corr
+    add capability chart.scatter as scatter
+
+    connect reader.rows -> corr.input
+    connect corr.result -> scatter.input
 
     interface {
         panel "correlation" { scatter }
