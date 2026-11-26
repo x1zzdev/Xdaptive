@@ -59,8 +59,9 @@ type system and the async policy complete the execution semantics.
   Capability or a streaming engine.
 - Data passes as **value, reference or streaming**; copying GB-scale data is
   prohibited (#16).
-- **Nullable (`Option<T>`) and missing (field presence) are distinct**; explicit
-  **namespaces** (#80).
+- **Nullable (`Option<T>`, a built-in value type) is separate from missing (a
+  record-level field-presence flag, not a value type)**; primitives are global and
+  only user types are namespaced (#80).
 - **Explicit schema version** and migration (#17).
 - **Contracts are representation only at Stage 0**; enforcement is Stage 3 (#18).
 - **Permissions and resources are declared** in AIR; the runtime grants and
@@ -78,17 +79,23 @@ type system and the async policy complete the execution semantics.
 - The **runtime owns the state lifecycle**; a Capability exposes versioned
   `get_state`/`set_state`; external resources are managed handles (#74).
 - Compatibility is **type plus semantic contract plus pre/postconditions** (#18).
+- **Four versioned dimensions** (AIR schema, ABI, Capability, state schema) are
+  governed by one **compatibility matrix** in `docs/04` (#11).
 
 ### Compiler, ABI and VM
 
 - **Hybrid execution**: native and bytecode, chosen by analysis, verification and
   permissions, **not by origin** (#20, #21).
-- **ABI value passing is a normalized ABI plus large-data handles** (#78); a
-  handle is a runtime resource id with a defined owner and lifetime.
+- **ABI value passing is a normalized ABI plus generational handles** (#78):
+  handles are `(workspace_epoch, slot, generation)`, single-owner by move, so a
+  stale handle is detected rather than silent. Every call carries a trace context.
 - **Minimal ABI skeleton with a version field**, verified before a module runs
   (#22).
-- **Stack-machine VM with mandatory static verification** (#79); invalid bytecode
-  is rejected before execution, and resource limits are separate.
+- **Typed stack-machine VM with mandatory static verification** (#79): bytecode
+  carries AIR type ids, so the verifier enforces the AIR type contract
+  structurally; invalid bytecode is rejected before execution. Resource limits
+  are instruction budget, wall-clock timeout and a memory ceiling. A canonical
+  disassembly is specified.
 - **Incremental compilation** per Capability plus dependents, with a local
   content-addressed cache (#25, #26).
 - LLVM is the first native backend; Cranelift is compared later (#21).
@@ -100,8 +107,10 @@ type system and the async policy complete the execution semantics.
 - **Change is an atomic transition** (#67); state integrity and numerical
   equivalence are two independent layers (RFC 0002).
 - **Runtime owns the state lifecycle** (#74).
-- **A swap drains gracefully first and cancels only when safe** (#81); the
-  runtime enforces a hard bound and rejects rather than force.
+- **A swap drains gracefully first and cancels only when safe** (#81): a hard
+  drain bound is a Workspace policy, the swap is **rejected** on exceed (force-stop
+  only for a declared-disposable Capability), and an external side effect needs an
+  idempotent or compensable declaration.
 - Storage is **SQLite plus content-addressed storage**; snapshots are COW and
   incremental; checkpoints are selective per engine (#27, #28, #29).
 - Clone shares immutable data with COW (#30).
@@ -138,7 +147,8 @@ type system and the async policy complete the execution semantics.
 - A **policy layer over the existing kernel**, not a kernel scheduler (#54).
 - **GPU backend abstraction** (Vulkan general, CUDA/ROCm optional) (#55).
 - Per-work-type benchmarks; power measured (#56, #57).
-- **Determinism is a three-level model** (#82), declared and verified.
+- **Determinism is a three-level model** (#82), declared per output and recorded
+  in a signed verification record the runtime trusts.
 
 ### Process, environment and observability
 
@@ -146,7 +156,8 @@ type system and the async policy complete the execution semantics.
   review for security, ABI and compatibility (#8, #3, #9).
 - **Linux primary; WSL2 allowed for development**; isolation tests on real Linux
   (#83).
-- **Structured event tracing** with a trace id per swap; **layered testing**
+- **Structured event tracing** as a typed schema with a pluggable encoding (JSON
+  first, binary later) and a trace context in the ABI; **layered testing**
   (#84).
 
 ## Consequences
