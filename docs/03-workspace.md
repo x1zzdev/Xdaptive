@@ -86,15 +86,29 @@ for how a change is applied across them.
 ## Persistence strategy
 
 Copying all data on every change is not acceptable. The storage is **SQLite plus
-content-addressed storage** (#27), separating metadata from large content:
+content-addressed storage** (#27), separating metadata from large content, and it
+follows a Git-like **immutable manifest** model (#93):
 
+- **Content addressing uses BLAKE3** (#91). The algorithm is recorded in the
+  manifest, an object id includes its algorithm, algorithms are never mixed in
+  one id space, and a hash match proves content identity only — **never
+  provenance or trust**.
+- **A Workspace version is a manifest of hashes.** The Workspace points at a
+  manifest hash; the manifest lists the hashes of its Capabilities, AIR source,
+  configuration and dependencies. A change writes new blobs, builds a new
+  manifest, and **atomically swaps the pointer**; the previous version is
+  untouched. Rollback references the previous manifest.
+- **The version number and the version identifier are separate**: the manifest
+  hash is the content's identity, a revision number is the change order, and a
+  parent hash links to the previous version. Two identical contents share a
+  manifest hash, and different Workspaces MAY share CAS objects.
+- **Snapshots are copy-on-write** (#28): **reflink where the filesystem supports
+  it, logical COW otherwise** (#92). Both backends MUST give the same snapshot
+  semantics; a reflink failure falls back safely to logical COW, and an existing
+  snapshot stays immutable.
+- **GC is reachability-based**, not reference-count-only: unreachable blobs are
+  reclaimed by tracing from the Workspace roots.
 - **A metadata store (SQLite)** indexes IDs, versions and references.
-- **Immutable, content-addressed blobs** hold data state and any artifact that
-  does not change once written.
-- **A change log** records the sequence of composition changes, so a Workspace
-  version can be reconstructed.
-- **Snapshots are copy-on-write and incremental** (#28); compression is applied
-  by a measured trade-off, not by default.
 - **Checkpoints are selective and per-engine** (#29). Where an engine can provide
   one, it is recorded; where it cannot, a re-run specification is recorded; where
   neither preserves required state, the change is rejected
