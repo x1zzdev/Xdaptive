@@ -58,13 +58,29 @@ extension**, not a Stage 0 feature
   every branch target is valid; the stack state agrees across branch paths;
   operand types match; and no disallowed memory access or instruction appears.
   Invalid bytecode is **rejected before it runs**, not caught at runtime.
-- Verification is not execution safety: infinite loops and excessive memory use
-  need separate **resource limits**, which Stage 0 provides the structure for.
+- **The bytecode is typed.** The compiler lowers typed AIR to bytecode that
+  carries **AIR's own type ids** on each value slot, and the verifier checks that
+  every operation respects them. The verifier is therefore **not a second type
+  system**: it enforces the same nominal type vocabulary structurally, in one
+  pass with the structural checks, so a verified module cannot violate the AIR
+  type contract. This is what closes the gap between "verification passed" and
+  "AIR-compatible".
+- **Resource limits are threefold.** Verification is not execution safety, so
+  three limits cover what it cannot: an **instruction budget** (a deterministic,
+  gas-like counter that works across a process boundary), a **wall-clock
+  timeout** as a backstop for blocked I/O, and a **per-module memory ceiling**.
+  Stage 0 implements the budget structure.
+- **A canonical disassembly** is part of the VM specification: a stable textual
+  form of a module, used for golden tests, debugging and review. Without a
+  canonical form, bytecode golden tests are brittle.
 - The native backend's first candidate is **LLVM** (#21). Cranelift is compared
   when fast compilation and JIT matter more than peak code quality.
 
 The verifier is part of the trusted computing base, so its own correctness
-matters: a verifier bug is a security bug, not a correctness bug.
+matters: a verifier bug is a security bug, not a correctness bug. Stage 0 treats
+the verifier as a **known risk mitigated by design** — a small, auditable
+instruction set, fuzzing and property tests — and puts **formal verification of
+the verifier** on the Stage 3 roadmap, alongside the contract engine (#36).
 
 ## Implementation languages
 
@@ -94,14 +110,27 @@ Value passing is a **normalized ABI plus large-data handles** (#78):
 - **Small values** — integers, floats, booleans, strings, small structs — pass by
   value in the normalized ABI, with an explicit type and length.
 - **Large data** — arrays, tables, buffers — passes as a **runtime-managed
-  handle**. A handle is a resource identifier owned by the runtime, **not a raw
-  memory address**, so the interface survives a module moving out of process
-  (Stage 1) unchanged.
-- A handle has a defined **owner and lifetime**. The ABI MUST state who frees it
-  and when, or a handle can outlive its data.
+  handle**, not a raw address.
+
+**Handles are generational and single-owner.** A handle is
+`(workspace_epoch, slot, generation)`: the runtime keeps a handle table per
+Workspace, and invalidating a slot bumps its generation. A stale handle — from a
+freed slot or an earlier Workspace version — is **detected and rejected**, so a
+dangling reference is a clean error rather than silent corruption, even
+in-process. Ownership is by **move**: creation yields ownership, a call transfers
+it, and the receiver either consumes or returns it. Reference counting and
+shared/zero-copy handles are a later addition; the generational design leaves
+room for them without a redesign.
 
 A handle is **not** zero-copy by itself. Real memory sharing is a later
 optimization to be measured, not assumed.
+
+### Trace context
+
+Every module call carries a **trace context** — a trace id and a span id, in the
+spirit of W3C `traceparent` — as part of the ABI (#84 follow-up). A trace
+therefore survives a module moving to another process in Stage 1 without a
+protocol change, and the same id links every event of a swap.
 
 Deferred to later RFCs, based on implementation evidence: complex ownership and
 lifetime rules, zero-copy transfer of large data, streaming-transfer details, GPU
