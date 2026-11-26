@@ -127,6 +127,35 @@ This is principle 6 ([15-principles.md](15-principles.md)) applied to state: the
 OS is not one that can always change, but one that changes only when it can do so
 safely.
 
+## Swapping a running Capability
+
+A Capability is replaced while it may be working, so the swap is a **graceful
+drain first, limited cancellation second** ([16-open-questions.md](16-open-questions.md),
+#81). A Capability has three states:
+
+| State | Meaning |
+|---|---|
+| **Running** | accepts new work and processes existing work |
+| **Draining** | accepts no new work, finishes existing work |
+| **Stopped** | work finished, safe to replace |
+
+The swap order is: Running → Draining (block new work, wait for existing work) →
+Snapshot → Restore and Validate on the new Capability → Commit.
+
+Draining cannot wait forever. The order of preference is:
+
+1. wait for normal completion;
+2. on timeout, check whether the work can be cancelled;
+3. if it can, stop at a safe cancellation point;
+4. if a checkpoint exists, preserve a recoverable state;
+5. if neither cancellation nor recovery is safe, **reject the swap**.
+
+**A cancellation request is not a completed cancellation.** A Capability that has
+received a request may not be able to stop safely at once, and an irreversible
+operation (an external call, a database transaction) needs its own policy. The
+runtime MUST enforce a hard upper bound and MUST reject rather than force a swap
+that cannot be drained or cancelled safely.
+
 ## Isolation
 
 Every execution module runs isolated. The target isolation is the **process
