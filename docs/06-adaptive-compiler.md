@@ -132,22 +132,49 @@ spirit of W3C `traceparent` — as part of the ABI (#84 follow-up). A trace
 therefore survives a module moving to another process in Stage 1 without a
 protocol change, and the same id links every event of a swap.
 
+### Record encoding
+
+A record crosses the ABI as **Schema ID + presence bitmap + field values**
+([16-open-questions.md](16-open-questions.md), #87):
+
+- The **Schema ID** references a schema definition; field order follows it.
+- The **presence bitmap** has one bit per field, in schema order, recording only
+  whether the field is present.
+- `Option<T>`'s `None` is a **separate value tag**, not a bitmap bit.
+- Empty data and absence are different and MUST be distinguishable.
+- Unknown fields are handled by the ABI version and extension rules.
+
+Presence and `Option` stay separate all the way through the ABI, exactly as they
+are in AIR ([05-adaptive-ir.md](05-adaptive-ir.md)).
+
 Deferred to later RFCs, based on implementation evidence: complex ownership and
 lifetime rules, zero-copy transfer of large data, streaming-transfer details, GPU
 memory sharing, and advanced native/VM call optimisation.
 
 ### ABI version compatibility
 
-A version field alone does not make modules compatible. The runtime MUST verify
-compatibility before running a module:
+A module **declares** its ABI requirements and supported range; the runtime
+**validates** them. The declaration is not self-proving (#88). The manifest
+carries:
 
-1. read the module's ABI version;
-2. check it against the compatibility rules;
-3. run it if compatible;
-4. otherwise **reject explicitly**, or use a conversion layer.
+```text
+abi:
+  required:  { major: 1, minor: 2 }
+  supported: { min: 1.2, max: 1.5 }
+```
 
-Stage 0 MUST validate only that one **bytecode** module is called through this ABI
-and returns a result. The native backend is not built at Stage 0.
+The runtime reads the module's declared range and validates it against the
+runtime's ABI:
+
+- a different **major** is incompatible by default;
+- a **minor** follows the defined backward-compatibility rules;
+- a module's declaration is verified, not trusted;
+- an incompatible module is **rejected**, never converted on the fly;
+- an adapter, if present, is a **separate, explicit** conversion path.
+
+Different ABI versions MAY coexist in one Workspace, each module validated on its
+own. Stage 0 MUST validate only that one **bytecode** module is called through
+this ABI and returns a result; the native backend is not built at Stage 0.
 
 ## Incremental compilation
 
