@@ -142,6 +142,11 @@ The two layers catch different faults: a tolerance-only check can pass when a
 datum was dropped but the final number happened to match; a bitwise-only check
 can fail on a correct recomputation. **Both MUST pass.**
 
+Comparison assumes a **determinism level** ([16-open-questions.md](16-open-questions.md),
+#82): integer and serialization work is compared bitwise, statistics within
+tolerance, and GPU or parallel work records its conditions. See
+[14-evaluation.md](14-evaluation.md).
+
 ## Execution boundaries at Stage 0
 
 The PoC runs **in-process, and only trusted, self-written code**
@@ -165,6 +170,18 @@ still mandatory, because that is what makes the PoC correct at all.
 4. The loaded data and the existing panels are preserved across both changes.
 5. A deliberately failing change rolls back and leaves the Workspace at its
    previous version.
+
+## The four core tests
+
+Stage 0 is not measured by how many features exist. It is measured by four tests
+([16-open-questions.md](16-open-questions.md), #84):
+
+1. Can Capability A run normally?
+2. Can A's state be saved and migrated to B?
+3. Did B restore the migrated state correctly?
+4. On failure, is A's state preserved and recovered safely?
+
+If these four pass, the core hypothesis is verified in substance.
 
 ## Related documents
 

@@ -101,6 +101,64 @@ Lowering the AI-call rate is **not** a goal in itself. A task that genuinely
 needs AI MUST use it; forcing it onto a non-AI path to improve the ratio is a
 regression, not an optimisation.
 
+## Determinism
+
+A change's before/after comparison needs the execution to be reproducible enough
+to compare. Determinism is a **three-level model**
+([16-open-questions.md](16-open-questions.md), #82):
+
+| Level | Guarantee | Applies to |
+|---|---|---|
+| **1 · Bitwise** | identical output bytes | integer work, serialization |
+| **2 · Numerical** | within tolerance | floating-point and statistics |
+| **3 · Best-effort** | reproducible conditions recorded | GPU, parallel, non-deterministic work |
+
+Level 2 uses the tolerance from [RFC 0002](rfc/0002-stage0-execution-contract.md)
+(`eps_abs = 1e-12`, `eps_rel = 1e-9` as PoC defaults). Level 3 records the input
+identifier, Capability and Module versions, execution environment, backend,
+operation settings and any random seed, so a result can be traced even when it
+cannot be reproduced bit for bit.
+
+**The level is declared by the Capability and verified by the runtime, never
+trusted.** A model-generated Capability claiming to be deterministic is not
+believed; the verification harness checks it (for example, by running it twice
+and comparing). Verification happens in the verification phase, not on every
+runtime call.
+
+## Observability
+
+The runtime MUST emit **structured events**, not free text
+([16-open-questions.md](16-open-questions.md), #84). At minimum it records:
+
+| Source | What is recorded |
+|---|---|
+| Resolver | which Capability was chosen |
+| Compiler | which execution module was produced |
+| Runtime | which Capability ran |
+| State migration | success/failure and verification result |
+| Permission | which permission was checked and denied |
+
+A swap carries one **trace id** through all of its events (requested → draining →
+snapshot → restore verified → committed), so a failure can be reconstructed.
+Stage 0 emits structured (JSON) events; a binary trace format is a later option
+if event volume makes JSON too costly.
+
+## Testing
+
+Testing is **layered** ([16-open-questions.md](16-open-questions.md), #84):
+
+1. **Unit** — a small function (CSV parsing, ABI value conversion, type checking).
+2. **Integration** — modules together (AIR → Compiler → Runtime).
+3. **Golden** — expected vs actual output (a statistic, a bytecode disassembly).
+4. **Property-based** — an invariant holds for many inputs (serialize then
+   restore equals the original).
+5. **Failure / swap** — safety under failure and replacement (a failed migration
+   preserves the old Capability).
+
+The Stage 0 core tests are the four that prove the hypothesis: run Capability A;
+save A's state and migrate it to B; verify B restored it; and on failure preserve
+A's state and recover.
+
 ## How a claim enters the specification
 
 1. State the claim as a normative sentence in the owning document.
