@@ -119,11 +119,14 @@ identifier, Capability and Module versions, execution environment, backend,
 operation settings and any random seed, so a result can be traced even when it
 cannot be reproduced bit for bit.
 
-**The level is declared by the Capability and verified by the runtime, never
-trusted.** A model-generated Capability claiming to be deterministic is not
-believed; the verification harness checks it (for example, by running it twice
-and comparing). Verification happens in the verification phase, not on every
-runtime call.
+**The level is declared per output** (with a Capability-level default), because a
+single Capability may mix deterministic and non-deterministic work (#82). The
+declaration is **not trusted on its own**: the verification harness checks it in
+the verification phase — for example, by running the work twice and comparing at
+the declared level — and records the result in a **signed verification record**
+in the manifest. At runtime the runtime trusts the **record**, not the raw claim.
+A cheap spot-check MAY be added for critical swaps, but the routine path does not
+re-run work to prove determinism.
 
 ## Observability
 
@@ -139,9 +142,12 @@ The runtime MUST emit **structured events**, not free text
 | Permission | which permission was checked and denied |
 
 A swap carries one **trace id** through all of its events (requested → draining →
-snapshot → restore verified → committed), so a failure can be reconstructed.
-Stage 0 emits structured (JSON) events; a binary trace format is a later option
-if event volume makes JSON too costly.
+snapshot → restore verified → committed), so a failure can be reconstructed. The
+trace is a **typed event schema**, and the encoding is **pluggable**: JSON in
+Stage 0 for readability, a compact binary encoding later when event volume makes
+JSON too costly. The schema does not change when the encoding does, and the trace
+context travels in the ABI ([06-adaptive-compiler.md](06-adaptive-compiler.md))
+so it survives a process boundary.
 
 ## Testing
 
