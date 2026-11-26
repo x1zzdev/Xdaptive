@@ -118,6 +118,26 @@ The registry MUST record, for each manifest, its origin and an integrity
 reference, so a manifest cannot be silently substituted. `Open question:` the
 integrity mechanism (hash pinning, signing) is not yet chosen.
 
+## Versions and compatibility
+
+Four versioned things meet at a Capability boundary (#11). Each carries a
+version, and a single compatibility matrix states which combinations are valid:
+
+| Version | Belongs to | Changes when |
+|---|---|---|
+| **AIR schema version** | an IR document | the AIR grammar changes |
+| **ABI version** | the module ABI | the call contract changes |
+| **Capability version** | a Capability's interface | its types, contract or permissions change |
+| **State schema version** | a Capability's state | the state layout changes |
+
+A load MUST check all four: the AIR document against the compiler, the module
+against the ABI, the Capability against the resolver, and a restored state
+against the Capability's current state schema. A mismatch is **rejected or
+converted by a declared migration, never guessed**. This matrix is the one place
+that defines which combinations may run; without it, four independent version
+numbers multiply into an unmanageable space. The concrete Stage 0 subset is
+filled in by the AIR grammar RFC and the ABI RFC.
+
 ## Capability Resolver
 
 The resolver turns a task's requirements into a set of connected Capabilities:
