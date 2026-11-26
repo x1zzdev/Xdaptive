@@ -83,6 +83,15 @@ hypothesis.
 | 83 | **Linux is the primary target; WSL2 is allowed for development.** Isolation and process tests run on real Linux (CI). | [12-roadmap.md](12-roadmap.md) |
 | 84 | **Observability is a typed event schema with a pluggable encoding** (JSON first, binary later) and a trace context in the ABI; **testing is layered** (unit, integration, golden, property, failure/swap). | [14-evaluation.md](14-evaluation.md), [02-architecture.md](02-architecture.md) |
 | 85 | **One compatibility matrix** governs the four versioned dimensions (AIR schema, ABI, Capability, state schema); a mismatch is rejected or migrated, never guessed. | [04-capability-model.md](04-capability-model.md) |
+| 86 | **Presence syntax is `name?: T`**, only on a field; `Option<T>` is value optionality; a missing required field is an error by default; a default applies only when declared. | [05-adaptive-ir.md](05-adaptive-ir.md) |
+| 87 | **A record crosses the ABI as Schema ID + presence bitmap + field values**; `None` is a separate value tag; empty and absent differ. | [06-adaptive-compiler.md](06-adaptive-compiler.md) |
+| 88 | **A module declares its ABI range; the runtime validates it.** Different major is incompatible by default; incompatible modules are rejected, not converted; an adapter is a separate path; ABI versions may coexist in one Workspace. | [06-adaptive-compiler.md](06-adaptive-compiler.md), [04-capability-model.md](04-capability-model.md) |
+| 89 | **Cancellation is cooperative**: a runtime token plus Capability-declared safe points; `await` is not automatically safe; cancellation is not rollback; an unresponsive Capability is bounded. | [07-execution-model.md](07-execution-model.md) |
+| 90 | **A Capability declares compensation; the runtime owns its lifecycle** (order, execution, tracking, recovery). | [07-execution-model.md](07-execution-model.md) |
+| 91 | **Content addressing uses BLAKE3**, recorded in the manifest; a hash match is content identity, not provenance or trust. | [03-workspace.md](03-workspace.md) |
+| 92 | **COW is reflink-first with a logical-COW fallback**, with identical snapshot semantics across backends. | [03-workspace.md](03-workspace.md) |
+| 93 | **A Workspace version is a manifest of hashes** with an atomic pointer swap; version number and identifier are separate; GC is reachability-based. | [03-workspace.md](03-workspace.md) |
+| 94 | **Analysis produces low-fidelity Capabilities first** (proxy → wrapper → reimplementation → differentially verified), promoted only through validation. | [08-software-understanding.md](08-software-understanding.md) |
 
 The Appendix B decisions were answered before the 63-question round and are
 renumbered here (#64–#69) so that every reference has one unique number. A bare

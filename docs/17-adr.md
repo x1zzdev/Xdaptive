@@ -160,6 +160,21 @@ type system and the async policy complete the execution semantics.
   first, binary later) and a trace context in the ABI; **layered testing**
   (#84).
 
+## Further decisions
+
+- **Presence** is `name?: T` on a field; `Option<T>` is value optionality (#86).
+  A record crosses the ABI as schema id + presence bitmap + values (#87).
+- **ABI compatibility** is declared by the module and validated by the runtime;
+  majors are incompatible by default, and incompatible modules are rejected
+  (#88).
+- **Cancellation** is cooperative, with Capability-declared safe points; `await`
+  is not automatically safe, and cancellation is not rollback (#89).
+- **Compensation** is declared by the Capability and owned by the runtime (#90).
+- **Storage** uses BLAKE3 (#91), reflink-first COW with a logical fallback (#92),
+  and a manifest-of-hashes Workspace version with an atomic pointer swap (#93).
+- **Software understanding** produces low-fidelity Capabilities first and
+  promotes them through differential validation (#94).
+
 ## Consequences
 
 - The design is deliberately conservative at the boundary and generous in the
