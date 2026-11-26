@@ -82,6 +82,7 @@ hypothesis.
 | 82 | **Determinism is a three-level model** — bitwise, numerical (tolerance), best-effort — declared **per output**, checked in the verification phase, and recorded in a **signed verification record** the runtime trusts. | [14-evaluation.md](14-evaluation.md), [13-poc.md](13-poc.md) |
 | 83 | **Linux is the primary target; WSL2 is allowed for development.** Isolation and process tests run on real Linux (CI). | [12-roadmap.md](12-roadmap.md) |
 | 84 | **Observability is a typed event schema with a pluggable encoding** (JSON first, binary later) and a trace context in the ABI; **testing is layered** (unit, integration, golden, property, failure/swap). | [14-evaluation.md](14-evaluation.md), [02-architecture.md](02-architecture.md) |
+| 85 | **One compatibility matrix** governs the four versioned dimensions (AIR schema, ABI, Capability, state schema); a mismatch is rejected or migrated, never guessed. | [04-capability-model.md](04-capability-model.md) |
 
 The Appendix B decisions were answered before the 63-question round and are
 renumbered here (#64–#69) so that every reference has one unique number. A bare

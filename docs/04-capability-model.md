@@ -120,8 +120,9 @@ integrity mechanism (hash pinning, signing) is not yet chosen.
 
 ## Versions and compatibility
 
-Four versioned things meet at a Capability boundary (#11). Each carries a
-version, and a single compatibility matrix states which combinations are valid:
+Four versioned things meet at a Capability boundary
+([16-open-questions.md](16-open-questions.md), #85). Each carries a version, and a
+single compatibility matrix states which combinations are valid:
 
 | Version | Belongs to | Changes when |
 |---|---|---|

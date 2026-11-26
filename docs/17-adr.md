@@ -80,7 +80,7 @@ type system and the async policy complete the execution semantics.
   `get_state`/`set_state`; external resources are managed handles (#74).
 - Compatibility is **type plus semantic contract plus pre/postconditions** (#18).
 - **Four versioned dimensions** (AIR schema, ABI, Capability, state schema) are
-  governed by one **compatibility matrix** in `docs/04` (#11).
+  governed by one **compatibility matrix** in `docs/04` (#85).
 
 ### Compiler, ABI and VM
 
