@@ -14,6 +14,7 @@
 [![Category: Adaptive Computing OS](https://img.shields.io/badge/category-Adaptive%20Computing%20OS-6f42c1.svg)](docs/01-vision.md)
 [![Status: Stage 0 — specification](https://img.shields.io/badge/status-Stage%200%20%C2%B7%20specification-orange.svg)](docs/12-roadmap.md)
 [![Language: Rust](https://img.shields.io/badge/implementation-Rust-dea584.svg)](Cargo.toml)
+[![Docs: specification-first](https://img.shields.io/badge/docs-specification--first-2ea44f.svg)](docs/README.md)
 
 [English](README.md) · [한국어](README.ko.md)
 
