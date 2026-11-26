@@ -94,10 +94,13 @@ Student {
 
 A recorded-but-empty score and a score that was never entered are different
 facts, so the two are kept apart. But presence belongs to the record, not the
-value: `Presence<T>` is **not** a value type. A field is either required
-(`name: T`) or may be omitted (`name?: T`); absence is resolved at the mapping or
-serialization boundary. The exact presence syntax is settled in the AIR grammar
-RFC.
+value: `Presence<T>` is **not** a value type. The presence syntax is
+**`name?: T`** ([16-open-questions.md](16-open-questions.md), #86):
+
+- `?` applies **only to a field declaration**, never to a value.
+- `Option<T>` expresses value optionality; `name?` expresses field presence.
+- A missing required field is an **error by default**.
+- A default applies **only when it is declared explicitly**.
 
 `Option<T>` is a **built-in type constructor**, not a user generic. General user
 generics are deferred (#80 follow-up); a built-in `Option` does not require them.
