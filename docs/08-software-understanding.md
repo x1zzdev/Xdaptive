@@ -102,6 +102,30 @@ Turns a reconstructed model into something usable:
 Combines verified functions into a Workspace. See
 [04-capability-model.md](04-capability-model.md).
 
+## Fidelity and promotion
+
+A reconstruction does not become trusted merely by existing
+([16-open-questions.md](16-open-questions.md), #94). It is produced at **low
+fidelity first** and promoted only through validation:
+
+| Stage | Form | Trust |
+|---|---|---|
+| 1 | black-box proxy | unverified |
+| 2 | wrapped Capability | observed |
+| 3 | reimplemented Capability | inferred |
+| 4 | differentially verified | verified |
+
+- The original behaviour is preserved as far as possible; unanalysed behaviour is
+  **not guessed** but marked explicitly.
+- An unverified Capability is kept **distinct** from a trusted one.
+- A reimplementation does **not replace** the proxy; it is a selectable execution
+  path available only after it passes **differential validation** against the
+  original.
+- If reimplementation fails, execution falls back to the proxy.
+
+Reimplementation is a promotion, not a rewrite: the project absorbs an existing
+system safely first, and earns an independent implementation later.
+
 ## From analysis to a manifest
 
 `Open question:` the form in which analysis output becomes a Software Manifest
